@@ -37,8 +37,8 @@ class Payload
 
     public function getParam($name)
     {
-        if (isset($this->param[$name])) {
-            return $this->param[$name];
+        if (isset($this->params[$name])) {
+            return $this->params[$name];
         }
         
         return null;
