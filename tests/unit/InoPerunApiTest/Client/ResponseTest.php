@@ -8,17 +8,6 @@ use InoPerunApi\Client\Response;
 class ResponseTest extends \PHPUnit_Framework_TestCase
 {
 
-    /**
-     * @var Response
-     */
-    protected $response;
-
-
-    public function setUp()
-    {
-        $this->response = new Response($this->getRequestMock());
-    }
-
 
     public function testConstructorNoError()
     {
