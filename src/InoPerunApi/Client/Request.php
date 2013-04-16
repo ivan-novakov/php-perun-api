@@ -7,6 +7,13 @@ class Request
 {
 
     /**
+     * The payload factory.
+     * 
+     * @var PayloadFactory
+     */
+    protected $payloadFactory = null;
+
+    /**
      * The remote manager name.
      * 
      * @var string
@@ -57,6 +64,32 @@ class Request
     }
 
 
+    /**
+     * Sets the payload factory.
+     * 
+     * @param PayloadFactory $payloadFactory
+     */
+    public function setPayloadFactory(PayloadFactory $payloadFactory)
+    {
+        $this->payloadFactory = $payloadFactory;
+    }
+
+
+    /**
+     * Returns the payload factory.
+     * 
+     * @return PayloadFactory
+     */
+    public function getPayloadFactory()
+    {
+        if (! ($this->payloadFactory instanceof PayloadFactory)) {
+            $this->payloadFactory = new PayloadFactory();
+        }
+        
+        return $this->payloadFactory;
+    }
+
+
     public function setManagerName($managerName)
     {
         $this->managerName = $managerName;
@@ -89,14 +122,11 @@ class Request
      */
     public function setPayload($payload)
     {
-        if (null === $payload) {
-            $this->payload = new Payload();
-        } elseif ($payload instanceof Payload) {
+        if ($payload instanceof Payload) {
             $this->payload = $payload;
-        } elseif (is_array($payload)) {
-            $this->payload = new Payload($payload);
         } else {
-            throw new Exception\InvalidPayloadException('The payload should be an array or a Payload object');
+            $this->payload = $this->getPayloadFactory()
+                ->createPayload($payload);
         }
     }
 

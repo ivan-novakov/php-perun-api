@@ -41,32 +41,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testSetPayloadWithArray()
+    public function testSetPayloadWithFactoryUse()
     {
-        $params = array(
+        $data = array(
             'foo' => 'bar'
         );
+        $payload = $this->getMock('InoPerunApi\Client\Payload');
+        $payloadFactory = $this->getMock('InoPerunApi\Client\PayloadFactory');
+        $payloadFactory->expects($this->once())
+            ->method('createPayload')
+            ->with($data)
+            ->will($this->returnValue($payload));
         
-        $this->request->setPayload($params);
-        $payload = $this->request->getPayload();
-        $this->assertInstanceOf('InoPerunApi\Client\Payload', $payload);
-        $this->assertSame($params, $payload->getParams());
-    }
-
-
-    public function testSetPayloadWithNull()
-    {
-        $this->request->setPayload(null);
-        $payload = $this->request->getPayload();
-        $this->assertInstanceOf('InoPerunApi\Client\Payload', $payload);
-        $this->assertEmpty($payload->getParams());
-    }
-
-
-    public function testSetPayloadWithInvalidPayload()
-    {
-        $this->setExpectedException('InoPerunApi\Client\Exception\InvalidPayloadException');
-        $this->request->setPayload('invalid payload');
+        $this->request->setPayloadFactory($payloadFactory);
+        $this->request->setPayload($data);
+        $this->assertSame($payload, $this->request->getPayload());
     }
 
 
