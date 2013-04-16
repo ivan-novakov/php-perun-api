@@ -56,4 +56,27 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $expectedPayload = $serializer->unserialize($data, $payload);
         $this->assertSame($expectedPayload, $payload);
     }
+
+
+    public function testUnserializeWithException()
+    {
+        $this->setExpectedException('InoPerunApi\Client\Serializer\Exception\UnserializeException');
+        
+        $data = '{"foo":"bar"}';
+        $params = array(
+            'foo' => 'bar'
+        );
+        
+        $serializer = $this->getMock('InoPerunApi\Client\Serializer\Json', array(
+            'jsonDecode'
+        ));
+        $serializer->expects($this->once())
+            ->method('jsonDecode')
+            ->with($data)
+            ->will($this->throwException(new \Exception()));
+        
+        $payload = $this->getMock('InoPerunApi\Client\Payload');
+        
+        $serializer->unserialize($data, $payload);
+    }
 }
