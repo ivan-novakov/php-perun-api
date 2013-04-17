@@ -8,6 +8,8 @@ use InoPerunApi\Client\Payload;
 class Json extends AbstractSerializer
 {
 
+    protected $code = 'json';
+
 
     public function serialize(Payload $payload)
     {

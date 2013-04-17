@@ -61,6 +61,7 @@ class Request
         }
         
         $this->setPayload($payload);
+        $this->setChangeState($changeState);
     }
 
 
@@ -151,5 +152,11 @@ class Request
     public function getChangeState()
     {
         return $this->changeState;
+    }
+
+
+    public function isChangeState()
+    {
+        return $this->getChangeState();
     }
 }

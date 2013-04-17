@@ -6,6 +6,12 @@ namespace InoPerunApi\Client;
 class Response
 {
 
+    const PARAM_ERROR_ID = 'errorId';
+
+    const PARAM_ERROR_TYPE = 'type';
+
+    const PARAM_ERROR_INFO = 'errorInfo';
+
     /**
      * The corresponding request.
      * 
@@ -20,32 +26,17 @@ class Response
      */
     protected $payload = null;
 
-    /**
-     * The error, contained in the response, if present.
-     * 
-     * @var Error
-     */
-    protected $error = null;
-
 
     /**
      * Constructor.
      * 
      * @param Request $request
      * @param Payload $payload
-     * @param Error $error
      */
-    public function __construct(Request $request, Payload $payload = null, Error $error = null)
+    public function __construct(Request $request, Payload $payload)
     {
         $this->request = $request;
-        
-        if (null !== $payload) {
-            $this->setPayload($payload);
-        }
-        
-        if (null !== $error) {
-            $this->setError($error);
-        }
+        $this->setPayload($payload);
     }
 
 
@@ -83,23 +74,13 @@ class Response
 
 
     /**
-     * Sets the response error.
-     * @param Error $error
-     */
-    public function setError(Error $error)
-    {
-        $this->error = $error;
-    }
-
-
-    /**
-     * Returns the response error.
+     * Returns the response error ID, if present.
      * 
-     * @return Error
+     * @return string|null
      */
-    public function getError()
+    public function getErrorId()
     {
-        return $this->error;
+        return $this->payload->getParam(self::PARAM_ERROR_ID);
     }
 
 
@@ -110,6 +91,28 @@ class Response
      */
     public function isError()
     {
-        return (null !== $this->getError());
+        return (null !== $this->getErrorId());
+    }
+
+
+    /**
+     * Returns the error type, if present.
+     * 
+     * @return string|null
+     */
+    public function getErrorType()
+    {
+        return $this->payload->getParam(self::PARAM_ERROR_TYPE);
+    }
+
+
+    /**
+     * Returns the error message, if present.
+     * 
+     * @return string|null
+     */
+    public function getErrorMessage()
+    {
+        return $this->payload->getParam(self::PARAM_ERROR_INFO);
     }
 }

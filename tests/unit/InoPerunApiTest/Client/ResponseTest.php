@@ -22,12 +22,18 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructorWithError()
     {
+        $errorId = 'testid';
+        $errorType = 'testtype';
+        $errorMessage = 'testmessage';
+        
         $request = $this->getRequestMock();
-        $error = $this->getErrorMock();
-        $response = new Response($request, null, $error);
+        $payload = $this->getPayloadMock($errorId, $errorType, $errorMessage);
+        $response = new Response($request, $payload);
+        
         $this->assertTrue($response->isError());
-        $this->assertSame($request, $response->getRequest());
-        $this->assertSame($error, $response->getError());
+        $this->assertSame($errorId, $response->getErrorId());
+        $this->assertSame($errorType, $response->getErrorType());
+        $this->assertSame($errorMessage, $response->getErrorMessage());
     }
     
     // ---------------------
@@ -39,9 +45,27 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    protected function getPayloadMock()
+    protected function getPayloadMock($errorId = null, $errorType = null, $errorMessage = null)
     {
         $payload = $this->getMock('InoPerunApi\Client\Payload');
+        if ($errorId) {
+            $payload->expects($this->at(0))
+                ->method('getParam')
+                ->with(Response::PARAM_ERROR_ID)
+                ->will($this->returnValue($errorId));
+            $payload->expects($this->at(1))
+                ->method('getParam')
+                ->with(Response::PARAM_ERROR_ID)
+                ->will($this->returnValue($errorId));
+            $payload->expects($this->at(2))
+                ->method('getParam')
+                ->with(Response::PARAM_ERROR_TYPE)
+                ->will($this->returnValue($errorType));
+            $payload->expects($this->at(3))
+                ->method('getParam')
+                ->with(Response::PARAM_ERROR_INFO)
+                ->will($this->returnValue($errorMessage));
+        }
         
         return $payload;
     }
