@@ -14,7 +14,7 @@ class PayloadFactory
      * @throws Exception\InvalidPayloadDataException
      * @return Payload
      */
-    public function createPayload($data)
+    public function createPayload($data = null)
     {
         if (null === $data) {
             return new Payload();

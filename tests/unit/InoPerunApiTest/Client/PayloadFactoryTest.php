@@ -22,7 +22,7 @@ class PayloadFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreatePayloadWithNull()
     {
-        $payload = $this->factory->createPayload(null);
+        $payload = $this->factory->createPayload();
         $this->assertInstanceOf('InoPerunApi\Client\Payload', $payload);
         $this->assertEmpty($payload->getParams());
     }

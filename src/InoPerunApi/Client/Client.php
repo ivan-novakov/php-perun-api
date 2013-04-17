@@ -2,9 +2,10 @@
 
 namespace InoPerunApi\Client;
 
-use Zend\Http;
+use InoPerunApi\Client\Http;
 use InoPerunApi\Client\Serializer\SerializerInterface;
 use InoPerunApi\Client\Authenticator\AuthenticatorInterface;
+use Zend\Http\Header\Cookie;
 
 
 class Client
@@ -12,36 +13,102 @@ class Client
 
     /**
 	 * Zend HTTP client.
-	 * @var Http\Client
+	 * @var \Zend\Http\Client
 	 */
     protected $httpClient = null;
 
     /**
-     * The serializer.
-     * @var SerializerInterface
-     */
+	 * The serializer.
+	 * @var SerializerInterface
+	 */
     protected $serializer = null;
 
     /**
-     * The authenticator.
+	 * The HTTP request factory.
+	 * 
+	 * @var Http\RequestFactory
+	 */
+    protected $httpRequestFactory = null;
+
+    /**
+     * The Perun response factory.
      * 
-     * @var AuthenticatorInterface
+     * @var ResponseFactory
      */
+    protected $responseFactory = null;
+
+    /**
+	 * The authenticator.
+	 * 
+	 * @var AuthenticatorInterface
+	 */
     protected $authenticator = null;
 
 
-    public function __construct(Http\Client $httpClient, SerializerInterface $serializer)
+    public function __construct($options, \Zend\Http\Client $httpClient, SerializerInterface $serializer)
     {
+        $this->setOptions($options);
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;
     }
 
 
     /**
-     * Sets the authenticator. 
+	 * Sets the client options.
+	 * 
+	 * @param array|\Traversable|ClientOptions $options
+	 */
+    public function setOptions($options)
+    {
+        if (! $options instanceof ClientOptions) {
+            $options = new ClientOptions($options);
+        }
+        
+        $this->options = $options;
+    }
+
+
+    /**
+	 * Returns the client options.
+	 * 
+	 * @return ClientOptions
+	 */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+
+    /**
+     * Sets the HTTP request factory.
      * 
-     * @param AuthenticatorInterface $authenticator
-     */
+	 * @param Http\RequestFactory $httpRequestFactory
+	 */
+    public function setHttpRequestFactory($httpRequestFactory)
+    {
+        $this->httpRequestFactory = $httpRequestFactory;
+    }
+
+
+    /**
+	 * Returns the HTTP request factory.
+	 *
+	 * @return Http\RequestFactory
+	 */
+    public function getHttpRequestFactory()
+    {
+        if (! $this->httpRequestFactory instanceof Http\RequestFactory) {
+            $this->httpRequestFactory = new Http\RequestFactory($this->serializer);
+        }
+        return $this->httpRequestFactory;
+    }
+
+
+    /**
+	 * Sets the authenticator. 
+	 * 
+	 * @param AuthenticatorInterface $authenticator
+	 */
     public function setAuthenticator(AuthenticatorInterface $authenticator)
     {
         $this->authenticator = $authenticator;
@@ -49,29 +116,79 @@ class Client
 
 
     /**
-     * Returns the authenticator.
-     * 
-     * @return AuthenticatorInterface
-     */
+	 * Returns the authenticator.
+	 * 
+	 * @return AuthenticatorInterface
+	 */
     public function getAuthenticator()
     {
         return $this->authenticator;
     }
 
 
-    public function sendRequest(Request $request, Response $response = null)
+    /**
+     * Sets the Perun response factory.
+     * 
+     * @param ResponseFactory $responseFactory
+     */
+    public function setResponseFactory(ResponseFactory $responseFactory)
     {
-        if (null === $response) {
-            $response = new Response($response);
+        $this->responseFactory = $responseFactory;
+    }
+
+
+    /**
+     * Returns the Perun response factory.
+     * 
+     * @return ResponseFactory
+     */
+    public function getResponseFactory()
+    {
+        if (! $this->responseFactory instanceof ResponseFactory) {
+            $this->responseFactory = new ResponseFactory();
+            $this->responseFactory->setSerializer($this->serializer);
         }
         
-        // configure http client
-        // configure authentication
-        // serialize request data
-        // create http request
-        // send http request
-        // de-serialize response
-        // check for error
-        // set response
+        return $this->responseFactory;
     }
+
+
+    public function send(Request $request, Response $response = null)
+    {
+        $httpRequest = $this->getHttpRequestFactory()
+            ->createRequest($this->options->getUrl(), $request);
+        
+        if ($this->authenticator instanceof AuthenticatorInterface) {
+            $this->authenticator->configureAuthentication($this->httpClient);
+        }
+        
+        $httpRequest->getHeaders()
+            ->addHeaders(array(
+            'Authorization' => 'Basic bm92YWtvdjpoZXRmaWVsZDJqYW1lcw=='
+        ));
+        
+        //_dump($httpRequest);
+        //_dump($this->httpClient);
+        try {
+            $httpResponse = $this->httpClient->send($httpRequest);
+        } catch (\Exception $e) {
+            /*
+             * Connection exception
+             */
+            _dump("$e");
+        }
+        
+        if ($httpResponse->getStatusCode() != 200) {}
+        
+        //_dump($this->httpClient->getLastRawRequest());
+        //_dump($this->httpClient->getLastRawResponse());
+        
+
+        return $this->getResponseFactory()
+            ->createResponseFromHttpResponse($httpResponse, $request);
+    }
+
+
+    public function sendRequest($managerName, $methodName, array $params = array(), $changeState = false)
+    {}
 }

@@ -3,7 +3,6 @@
 namespace InoPerunApi\Client\Authenticator;
 
 use Zend\Http\Client;
-use InoPerunApi\Exception as GeneralException;
 
 
 class StaticCookie extends AbstractAuthenticator
