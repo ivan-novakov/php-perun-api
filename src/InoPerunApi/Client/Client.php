@@ -31,6 +31,13 @@ class Client
     protected $httpRequestFactory = null;
 
     /**
+     * The Perun request factory.
+     * 
+     * @var RequestFactory
+     */
+    protected $requestFactory = null;
+
+    /**
      * The Perun response factory.
      * 
      * @var ResponseFactory
@@ -164,7 +171,32 @@ class Client
     }
 
 
-    public function send(Request $request, Response $response = null)
+    /**
+     * Sets the Perun request factory.
+     * 
+     * @param RequestFactory $requestFactory
+     */
+    public function setRequestFactory(RequestFactory $requestFactory)
+    {
+        $this->requestFactory = $requestFactory;
+    }
+
+
+    /**
+     * Returns the Perun request factory.
+     * 
+     * @return RequestFactory
+     */
+    public function getRequestFactory()
+    {
+        if (! $this->requestFactory instanceof RequestFactory) {
+            $this->requestFactory = new RequestFactory();
+        }
+        return $this->requestFactory;
+    }
+
+
+    public function send(Request $request)
     {
         $httpRequest = $this->getHttpRequestFactory()
             ->createRequest($this->options->getUrl(), $request);
@@ -190,5 +222,10 @@ class Client
 
 
     public function sendRequest($managerName, $methodName, array $params = array(), $changeState = false)
-    {}
+    {
+        $request = $this->getRequestFactory()
+            ->createRequest($managerName, $methodName, $params, $changeState);
+        
+        return $this->send($request);
+    }
 }

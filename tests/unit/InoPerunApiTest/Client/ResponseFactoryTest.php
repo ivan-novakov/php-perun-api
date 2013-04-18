@@ -109,7 +109,9 @@ class ResponseFactoryTest extends \PHPUnit_Framework_TestCase
 
     protected function createRequestMock()
     {
-        $request = $this->getMock('InoPerunApi\Client\Request');
+        $request = $this->getMockBuilder('InoPerunApi\Client\Request')
+            ->disableOriginalConstructor()
+            ->getMock();
         return $request;
     }
 

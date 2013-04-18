@@ -7,13 +7,6 @@ class Request
 {
 
     /**
-     * The payload factory.
-     * 
-     * @var PayloadFactory
-     */
-    protected $payloadFactory = null;
-
-    /**
      * The remote manager name.
      * 
      * @var string
@@ -50,44 +43,12 @@ class Request
      * @param array|Payload $payload
      * @param boolean $changeState
      */
-    public function __construct($managerName = null, $methodName = null, $payload = null, $changeState = false)
+    public function __construct($managerName, $methodName, Payload $payload, $changeState = false)
     {
-        if (null !== $managerName) {
-            $this->setManagerName($managerName);
-        }
-        
-        if (null !== $methodName) {
-            $this->setMethodName($methodName);
-        }
-        
+        $this->setManagerName($managerName);
+        $this->setMethodName($methodName);
         $this->setPayload($payload);
         $this->setChangeState($changeState);
-    }
-
-
-    /**
-     * Sets the payload factory.
-     * 
-     * @param PayloadFactory $payloadFactory
-     */
-    public function setPayloadFactory(PayloadFactory $payloadFactory)
-    {
-        $this->payloadFactory = $payloadFactory;
-    }
-
-
-    /**
-     * Returns the payload factory.
-     * 
-     * @return PayloadFactory
-     */
-    public function getPayloadFactory()
-    {
-        if (! ($this->payloadFactory instanceof PayloadFactory)) {
-            $this->payloadFactory = new PayloadFactory();
-        }
-        
-        return $this->payloadFactory;
     }
 
 
@@ -118,17 +79,12 @@ class Request
     /**
      * Sets the request payload.
      * 
-     * @param array|Payload|null $payload
+     * @param Payload $payload
      * @throws Exception\InvalidPayloadException
      */
-    public function setPayload($payload)
+    public function setPayload(Payload $payload)
     {
-        if ($payload instanceof Payload) {
-            $this->payload = $payload;
-        } else {
-            $this->payload = $this->getPayloadFactory()
-                ->createPayload($payload);
-        }
+        $this->payload = $payload;
     }
 
 

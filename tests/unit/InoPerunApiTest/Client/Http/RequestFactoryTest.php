@@ -112,7 +112,9 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase
 
     protected function createPerunRequestMock($managerName = 'foo', $methodName = 'bar', $payload = array(), $changeState = false)
     {
-        $request = $this->getMock('InoPerunApi\Client\Request');
+        $request = $this->getMockBuilder('InoPerunApi\Client\Request')
+            ->disableOriginalConstructor()
+            ->getMock();
         $request->expects($this->any())
             ->method('getManagerName')
             ->will($this->returnValue($managerName));

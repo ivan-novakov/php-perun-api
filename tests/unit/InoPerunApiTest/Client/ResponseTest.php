@@ -39,7 +39,9 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     // ---------------------
     protected function getRequestMock()
     {
-        $request = $this->getMock('InoPerunApi\Client\Request');
+        $request = $this->getMockBuilder('InoPerunApi\Client\Request')
+            ->disableOriginalConstructor()
+            ->getMock();
         
         return $request;
     }
