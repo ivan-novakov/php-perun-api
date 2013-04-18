@@ -1,0 +1,23 @@
+<?php
+return array(
+    
+    'client' => array(
+        'url' => 'https://api.example.org/rest'
+    ), 
+    
+    'http_client' => array(
+        'adapter' => 'Zend\Http\Client\Adapter\Curl', 
+        'useragent' => 'Perun Client', 
+        'curloptions' => array(
+            CURLOPT_SSL_VERIFYPEER => true, 
+            CURLOPT_SSL_VERIFYHOST => 2, 
+            CURLOPT_CAINFO => '/etc/ssl/certs/ca-bundle.pem'
+        )
+    ), 
+    
+    'authenticator' => array(
+        'cookie_name' => 'SESSION', 
+        'cookie_value' => 'qpqpqpqpqpqpq12121', 
+        'authorization' => 'Basic 10100101010101010101'
+    )
+);
