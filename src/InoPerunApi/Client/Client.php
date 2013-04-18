@@ -52,7 +52,14 @@ class Client
     protected $authenticator = null;
 
 
-    public function __construct($options,\Zend\Http\Client $httpClient, SerializerInterface $serializer)
+    /**
+     * Constructor.
+     * 
+     * @param array|\Traversable $options
+     * @param \Zend\Http\Client $httpClient
+     * @param SerializerInterface $serializer
+     */
+    public function __construct($options, \Zend\Http\Client $httpClient, SerializerInterface $serializer)
     {
         $this->setOptions($options);
         $this->httpClient = $httpClient;
@@ -196,6 +203,14 @@ class Client
     }
 
 
+    /**
+     * Sends a request to the Perun server and returns the response.
+     * 
+     * @param Request $request
+     * @throws Exception\ConnectionException
+     * @throws Exception\InvalidResponseException
+     * @return Response
+     */
     public function send(Request $request)
     {
         $httpRequest = $this->getHttpRequestFactory()
@@ -208,19 +223,28 @@ class Client
         try {
             $httpResponse = $this->httpClient->send($httpRequest);
         } catch (\Exception $e) {
-            /*
-             * Connection exception
-             */
-            _dump("$e");
+            throw new Exception\ConnectionException(sprintf("HTTP request exception: [%s] %s", get_class($e), $e->getMessage()), null, $e);
         }
         
-        if ($httpResponse->getStatusCode() != 200) {}
+        if ($httpResponse->getStatusCode() != 200) {
+            throw new Exception\InvalidResponseException(sprintf("Invalid status code returned from server: %d", $httpResponse->getStatusCode()));
+        }
         
         return $this->getResponseFactory()
             ->createResponseFromHttpResponse($httpResponse, $request);
     }
 
 
+    /**
+     * Convenient method for sending requests to the Perun server. The request is created from the provided
+     * arguments.
+     * 
+     * @param string $managerName
+     * @param string $methodName
+     * @param array $params
+     * @param string $changeState
+     * @return Response
+     */
     public function sendRequest($managerName, $methodName, array $params = array(), $changeState = false)
     {
         $request = $this->getRequestFactory()

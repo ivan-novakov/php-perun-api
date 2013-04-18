@@ -35,19 +35,17 @@ $client->setAuthenticator($authenticator);
 /*
  * Perun request
  */
-$perunRequest = new Request('usersManager', 'getUserById', new Payload(array(
-    'id' => 13793
-)));
+try {
+    $perunResponse = $client->sendRequest('usersManager', 'getUserById', array(
+        'id' => 13793
+    ));
+} catch (\Exception $e) {
+    _dump("$e");
+    exit();
+}
 
-$perunResponse = $client->send($perunRequest);
 _dump($client->getHttpClient()
     ->getLastRawRequest());
 _dump($client->getHttpClient()
     ->getLastRawResponse());
-_dump($perunResponse);
-
-$perunResponse = $client->sendRequest('usersManager', 'getUserById', array(
-    'id' => 13793
-));
-
 _dump($perunResponse);
