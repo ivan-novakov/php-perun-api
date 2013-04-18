@@ -10,9 +10,9 @@ interface AuthenticatorInterface
 
 
     /**
-     * Configures the authentication in the HTTP client.
+     * Configures authentication on the HTTP request.
      * 
-     * @param Http\Client $httpClient
+     * @param Http\Request $httpRequest
      */
-    public function configureAuthentication(Http\Client $httpClient);
+    public function configureRequest(Http\Request $httpRequest);
 }

@@ -45,7 +45,7 @@ class Client
     protected $authenticator = null;
 
 
-    public function __construct($options, \Zend\Http\Client $httpClient, SerializerInterface $serializer)
+    public function __construct($options,\Zend\Http\Client $httpClient, SerializerInterface $serializer)
     {
         $this->setOptions($options);
         $this->httpClient = $httpClient;
@@ -76,6 +76,17 @@ class Client
     public function getOptions()
     {
         return $this->options;
+    }
+
+
+    /**
+     * Returns the HTTP client.
+     * 
+     * @return \Zend\Http\Client
+     */
+    public function getHttpClient()
+    {
+        return $this->httpClient;
     }
 
 
@@ -159,16 +170,9 @@ class Client
             ->createRequest($this->options->getUrl(), $request);
         
         if ($this->authenticator instanceof AuthenticatorInterface) {
-            $this->authenticator->configureAuthentication($this->httpClient);
+            $this->authenticator->configureRequest($httpRequest);
         }
         
-        $httpRequest->getHeaders()
-            ->addHeaders(array(
-            'Authorization' => 'Basic bm92YWtvdjpoZXRmaWVsZDJqYW1lcw=='
-        ));
-        
-        //_dump($httpRequest);
-        //_dump($this->httpClient);
         try {
             $httpResponse = $this->httpClient->send($httpRequest);
         } catch (\Exception $e) {
@@ -180,10 +184,6 @@ class Client
         
         if ($httpResponse->getStatusCode() != 200) {}
         
-        //_dump($this->httpClient->getLastRawRequest());
-        //_dump($this->httpClient->getLastRawResponse());
-        
-
         return $this->getResponseFactory()
             ->createResponseFromHttpResponse($httpResponse, $request);
     }

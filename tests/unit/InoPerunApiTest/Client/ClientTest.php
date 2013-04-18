@@ -38,6 +38,14 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testGetHttpClient()
+    {
+        $httpClient = $this->createHttpClientMock();
+        $client = new Client(null, $httpClient, $this->createSerializerMock());
+        $this->assertSame($httpClient, $client->getHttpClient());
+    }
+
+
     public function testSetHttpRequestFactory()
     {
         $client = $this->createClient();
