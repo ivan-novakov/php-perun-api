@@ -5,6 +5,7 @@ namespace InoPerunApi\Client;
 use InoPerunApi\Client\Http;
 use InoPerunApi\Client\Serializer\SerializerInterface;
 use InoPerunApi\Client\Authenticator\AuthenticatorInterface;
+use InoPerunApi\Client\Serializer\Exception\UnserializeException;
 use Zend\Http\Header\Cookie;
 
 
@@ -226,12 +227,12 @@ class Client
             throw new Exception\ConnectionException(sprintf("HTTP request exception: [%s] %s", get_class($e), $e->getMessage()), null, $e);
         }
         
-        if ($httpResponse->getStatusCode() != 200) {
-            throw new Exception\InvalidResponseException(sprintf("Invalid status code returned from server: %d", $httpResponse->getStatusCode()));
+        try {
+            return $this->getResponseFactory()
+                ->createResponseFromHttpResponse($httpResponse, $request);
+        } catch (UnserializeException $e) {
+            throw new Exception\InvalidResponseException(sprintf("Invalid server response, status code: %d", $httpResponse->getStatusCode()), null, $e);
         }
-        
-        return $this->getResponseFactory()
-            ->createResponseFromHttpResponse($httpResponse, $request);
     }
 
 

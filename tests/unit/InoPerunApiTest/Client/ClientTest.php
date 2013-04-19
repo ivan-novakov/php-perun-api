@@ -3,6 +3,7 @@
 namespace InoPerunApiTest\Client;
 
 use InoPerunApi\Client\Client;
+use InoPerunApi\Client\Serializer\Exception\UnserializeException;
 
 
 class ClientTest extends \PHPUnit_Framework_TestCase
@@ -124,10 +125,17 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->with($httpRequest)
             ->will($this->returnValue($httpResponse));
         
+        $responseFactory = $this->getMock('InoPerunApi\Client\ResponseFactory');
+        $responseFactory->expects($this->once())
+            ->method('createResponseFromHttpResponse')
+            ->with($httpResponse, $request)
+            ->will($this->throwException(new UnserializeException()));
+        
         $client = $this->createClient($options, $httpClient);
         $client->setOptions($options);
         $client->setHttpRequestFactory($httpRequestFactory);
         $client->setAuthenticator($authenticator);
+        $client->setResponseFactory($responseFactory);
         
         $response = $client->send($request);
     }
