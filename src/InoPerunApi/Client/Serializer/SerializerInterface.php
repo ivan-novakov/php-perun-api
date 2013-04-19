@@ -18,6 +18,14 @@ interface SerializerInterface
 
 
     /**
+     * Returns the MIME type of the serialized data.
+     * 
+     * @return string
+     */
+    public function getMimeType();
+
+
+    /**
      * Serializes the payload.
      * 
      * @param Payload $payload

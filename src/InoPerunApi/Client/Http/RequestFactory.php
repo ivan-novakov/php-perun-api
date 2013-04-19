@@ -18,6 +18,11 @@ class RequestFactory
     protected $serializer = null;
 
 
+    /**
+     * Constructor.
+     * 
+     * @param SerializerInterface $serializer
+     */
     public function __construct(SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
@@ -34,6 +39,7 @@ class RequestFactory
      */
     public function createRequest($baseUrl, PerunRequest $perunRequest)
     {
+        /* @var $httpRequest \Zend\Http\Request */
         $httpRequest = new HttpRequest();
         
         $httpRequest->setUri($this->constructUrl($baseUrl, $perunRequest));
@@ -42,6 +48,10 @@ class RequestFactory
             $serializedParams = $this->serializer->serialize($perunRequest->getPayload());
             $httpRequest->setMethod(HttpRequest::METHOD_POST);
             $httpRequest->setContent($serializedParams);
+            $httpRequest->getHeaders()
+                ->addHeaders(array(
+                'Content-Type' => $this->serializer->getMimeType()
+            ));
         } else {
             $params = $perunRequest->getPayload()
                 ->getParams();

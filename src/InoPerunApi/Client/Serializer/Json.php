@@ -10,6 +10,8 @@ class Json extends AbstractSerializer
 
     protected $code = 'json';
 
+    protected $mimeType = 'application/json';
+
 
     public function serialize(Payload $payload)
     {

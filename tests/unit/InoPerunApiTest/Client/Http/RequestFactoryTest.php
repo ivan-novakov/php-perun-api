@@ -69,6 +69,7 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase
         $methodName = 'barMethod';
         $serializedPayload = 'serialized payload';
         $url = 'https://example.org/some/path/foo/bar';
+        $mimeType = 'foo/bar';
         
         $payload = $this->createPayloadMock(array(
             'foo' => 'bar'
@@ -81,6 +82,9 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase
             ->method('serialize')
             ->with($payload)
             ->will($this->returnValue($serializedPayload));
+        $serializer->expects($this->once())
+            ->method('getMimeType')
+            ->will($this->returnValue($mimeType));
         
         /* @var $requestFactory \InoPerunApi\Client\Http\RequestFactory */
         $requestFactory = $this->getMock('InoPerunApi\Client\Http\RequestFactory', array(
@@ -96,6 +100,8 @@ class RequestFactoryTest extends \PHPUnit_Framework_TestCase
         $httpRequest = $requestFactory->createRequest($baseUrl, $perunRequest);
         $this->assertSame($url, $httpRequest->getUriString());
         $this->assertSame($serializedPayload, $httpRequest->getContent());
+        $this->assertSame($mimeType, $httpRequest->getHeader('Content-Type')
+            ->getFieldValue());
     }
     
     //----------------------
