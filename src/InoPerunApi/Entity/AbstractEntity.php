@@ -5,7 +5,7 @@ namespace InoPerunApi\Entity;
 use Zend\Stdlib\ArrayObject;
 
 
-abstract class AbstractEntity
+abstract class AbstractEntity implements EntityInterface
 {
 
     /**
