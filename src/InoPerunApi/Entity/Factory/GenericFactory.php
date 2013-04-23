@@ -62,7 +62,8 @@ class GenericFactory implements FactoryInterface
             return $this->createEntityCollection($data);
         }
         
-        throw new Exception\InvalidEntityDataException(sprintf("Passed data are neither entity data, nor entity collection data."));
+        throw new Exception\InvalidEntityDataException(
+            sprintf("Passed data are neither entity data, nor entity collection data."));
     }
 
 
@@ -99,6 +100,7 @@ class GenericFactory implements FactoryInterface
      * Returns true, if the provided data are an entity data.
      * 
      * @param array $data
+     * @return boolean
      */
     protected function isEntityData(array $data)
     {
@@ -110,9 +112,10 @@ class GenericFactory implements FactoryInterface
      * Returns true if the provided data are an entity collection data.
      * 
      * @param array $data
+     * @return boolean
      */
     protected function isEntityCollectionData(array $data)
     {
-        return (isset($data[0][$this->getBeanPropertyName()]));
+        return (is_array($data[0]) && isset($data[0][$this->getBeanPropertyName()]));
     }
 }

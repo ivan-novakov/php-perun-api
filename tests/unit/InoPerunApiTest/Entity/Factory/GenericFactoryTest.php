@@ -88,7 +88,7 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('InoPerunApi\Entity\Factory\Exception\InvalidEntityDataException');
         $data = array(
-            'invalid data'
+            'cinvalid data'
         );
         $this->factory->create($data);
     }
