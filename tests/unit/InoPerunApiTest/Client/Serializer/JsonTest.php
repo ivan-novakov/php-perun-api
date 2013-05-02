@@ -2,12 +2,8 @@
 
 namespace InoPerunApiTest\Client\Serializer;
 
-use InoPerunApi\Client\Serializer\Json;
-
-
 class JsonTest extends \PHPUnit_Framework_TestCase
 {
-
 
     public function testSerialize()
     {
@@ -32,7 +28,6 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $expectedData = $serializer->serialize($payload);
     }
 
-
     public function testUnserialize()
     {
         $data = '{"foo":"bar"}';
@@ -56,7 +51,6 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $expectedPayload = $serializer->unserialize($data, $payload);
         $this->assertSame($expectedPayload, $payload);
     }
-
 
     public function testUnserializeWithException()
     {

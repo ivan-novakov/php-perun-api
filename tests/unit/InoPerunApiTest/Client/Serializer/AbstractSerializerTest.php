@@ -2,12 +2,9 @@
 
 namespace InoPerunApiTest\Client\Serializer;
 
-use InoPerunApi\Client\Serializer\AbstractSerializer;
-
 
 class AbstractSerializerTest extends \PHPUnit_Framework_TestCase
 {
-
 
     public function testSetCode()
     {
@@ -17,7 +14,6 @@ class AbstractSerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($code, $serializer->getCode());
     }
 
-
     public function testSetMimeType()
     {
         $serializer = $this->createSerializerMock();
@@ -25,7 +21,6 @@ class AbstractSerializerTest extends \PHPUnit_Framework_TestCase
         $serializer->setMimeType($mimeType);
         $this->assertSame($mimeType, $serializer->getMimeType());
     }
-
 
     protected function createSerializerMock()
     {

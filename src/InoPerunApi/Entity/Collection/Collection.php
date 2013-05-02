@@ -3,7 +3,6 @@
 namespace InoPerunApi\Entity\Collection;
 
 use Zend\Stdlib\ArrayObject;
-use InoPerunApi\Entity\AbstractEntity;
 use InoPerunApi\Entity\EntityInterface;
 
 
