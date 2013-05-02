@@ -16,6 +16,12 @@ class GenericFactory implements FactoryInterface
      */
     protected $beanPropertyName = null;
 
+    protected $defaultEntityClass = 'InoPerunApi\Entity\GenericEntity';
+
+    protected $beanToEntityClassMappings = array(
+        'userBean' => 'InoPerunApi\Entity\User'
+    );
+
 
     /**
      * Sets the bean name property name.
@@ -44,6 +50,28 @@ class GenericFactory implements FactoryInterface
 
 
     /**
+     * Sets the bean to entity class mappings.
+     * 
+     * @param array $mappings
+     */
+    public function setBeanToEntityClassMappings(array $mappings)
+    {
+        $this->beanToEntityClassMappings = $mappings;
+    }
+
+
+    /**
+     * Returns the bean to entity class mappings.
+     * 
+     * @return array
+     */
+    public function getBeanToEntityClassMappings()
+    {
+        return $this->beanToEntityClassMappings;
+    }
+
+
+    /**
      * {@inheritdoc}
      * @see \InoPerunApi\Entity\Factory\FactoryInterface::create()
      */
@@ -62,8 +90,7 @@ class GenericFactory implements FactoryInterface
             return $this->createEntityCollection($data);
         }
         
-        throw new Exception\InvalidEntityDataException(
-            sprintf("Passed data are neither entity data, nor entity collection data."));
+        throw new Exception\InvalidEntityDataException(sprintf("Passed data are neither entity data, nor entity collection data."));
     }
 
 
@@ -77,7 +104,19 @@ class GenericFactory implements FactoryInterface
             throw new Exception\InvalidEntityDataException('Passed data are not entity data');
         }
         
-        return new GenericEntity($data);
+        foreach ($data as $fieldName => $fieldValue) {
+            if (is_array($fieldValue)) {
+                if ($this->isEntityData($fieldValue)) {
+                    $data[$fieldName] = $this->createEntity($fieldValue);
+                }
+                
+                if ($this->isEntityCollectionData($fieldValue)) {
+                    $data[$fieldName] = $this->createEntityCollection($fieldValue);
+                }
+            }
+        }
+        
+        return $this->simpleCreateEntity($data);
     }
 
 
@@ -93,6 +132,35 @@ class GenericFactory implements FactoryInterface
         }
         
         return new Collection($entities);
+    }
+
+
+    /**
+     * Returns the entity class that corresponds to the bean. If none is defined, the default class 
+     * is returned.
+     * 
+     * @param string $beanName
+     * @return string
+     */
+    public function getEntityClassForBean($beanName)
+    {
+        if (isset($this->beanToEntityClassMappings[$beanName])) {
+            return $this->beanToEntityClassMappings[$beanName];
+        }
+        
+        return $this->defaultEntityClass;
+    }
+
+
+    /**
+     * Creates the entity object.
+     * 
+     * @param array $data
+     * @return EntityInterface
+     */
+    protected function simpleCreateEntity(array $data)
+    {
+        return new GenericEntity($data);
     }
 
 
@@ -116,6 +184,6 @@ class GenericFactory implements FactoryInterface
      */
     protected function isEntityCollectionData(array $data)
     {
-        return (is_array($data[0]) && isset($data[0][$this->getBeanPropertyName()]));
+        return (isset($data[0]) && is_array($data[0]) && isset($data[0][$this->getBeanPropertyName()]));
     }
 }

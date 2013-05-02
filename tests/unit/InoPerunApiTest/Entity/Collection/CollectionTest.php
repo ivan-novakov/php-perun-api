@@ -34,6 +34,22 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testGetAt()
+    {
+        $entity1 = $this->getMock('InoPerunApi\Entity\EntityInterface');
+        $entity2 = $this->getMock('InoPerunApi\Entity\EntityInterface');
+        
+        $collection = new Collection(array(
+            $entity1,
+            $entity2
+        ));
+        
+        $this->assertSame($entity1, $collection->getAt(0));
+        $this->assertSame($entity2, $collection->getAt(1));
+        $this->assertNull($collection->getAt(2));
+    }
+
+
     public function testAppend()
     {
         $entities = $this->createEntityArray();
@@ -50,7 +66,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     protected function createEntityArray()
     {
         return array(
-            $this->getMock('InoPerunApi\Entity\EntityInterface'), 
+            $this->getMock('InoPerunApi\Entity\EntityInterface'),
             $this->getMock('InoPerunApi\Entity\EntityInterface')
         );
     }

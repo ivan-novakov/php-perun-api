@@ -51,6 +51,27 @@ class Collection implements \Countable, \IteratorAggregate
 
 
     /**
+     * Returns the entity at the required index.
+     * 
+     * @param integer $index
+     * @return EntityInterface|null
+     */
+    public function getAt($index)
+    {
+        $index = intval($index);
+        $i = 0;
+        
+        foreach ($this->entities as $entity) {
+            if ($i ++ === $index) {
+                return $entity;
+            }
+        }
+        
+        return null;
+    }
+
+
+    /**
      * Returns the entity count.
      * 
      * @return integer

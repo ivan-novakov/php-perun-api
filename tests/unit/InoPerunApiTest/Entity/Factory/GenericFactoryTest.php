@@ -9,6 +9,7 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     *
      * @var GenericFactory
      */
     protected $factory = null;
@@ -25,6 +26,27 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
         $beanPropertyName = 'beanName';
         $this->factory->setBeanPropertyName($beanPropertyName);
         $this->assertSame($beanPropertyName, $this->factory->getBeanPropertyName());
+    }
+
+
+    public function testSetBeanToEntityClassMappings()
+    {
+        $mappings = array(
+            'foo' => 'bar'
+        );
+        
+        $this->factory->setBeanToEntityClassMappings($mappings);
+        $this->assertSame($mappings, $this->factory->getBeanToEntityClassMappings());
+    }
+
+
+    public function testGetEntityClassForBean()
+    {
+        $mappings = array(
+            'foo' => 'bar'
+        );
+        $this->factory->setBeanToEntityClassMappings($mappings);
+        $this->assertSame('bar', $this->factory->getEntityClassForBean('foo'));
     }
 
 
@@ -84,6 +106,54 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testCreateWithRecursiveData()
+    {
+        $simpleArray = array(
+            'some_key' => 'some_value'
+        );
+        $data = array(
+            'id' => 123,
+            'beanName' => 'foo',
+            
+            'simpleArray' => $simpleArray,
+            
+            'embeddedEntity' => array(
+                'name' => 'embedded entity',
+                'beanName' => 'embedded'
+            ),
+            
+            'embeddedCollection' => array(
+                array(
+                    'id' => 12,
+                    'beanName' => 'embeddedCol'
+                ),
+                array(
+                    'id' => 13,
+                    'beanName' => 'embeddedCol'
+                )
+            )
+        );
+        
+        $entity = $this->factory->create($data);
+        $this->assertInstanceOf('InoPerunApi\Entity\EntityInterface', $entity);
+        $this->assertSame(123, $entity->getId());
+        $this->assertSame('foo', $entity->getEntityName());
+        $this->assertSame($simpleArray, $entity->getSimpleArray());
+        
+        $embeddedEntity = $entity->getEmbeddedEntity();
+        $this->assertInstanceOf('InoPerunApi\Entity\EntityInterface', $embeddedEntity);
+        $this->assertSame('embedded entity', $embeddedEntity->getName());
+        $this->assertSame('embedded', $embeddedEntity->getEntityName());
+        
+        $embeddedCollection = $entity->getEmbeddedCollection();
+        $this->assertInstanceOf('InoPerunApi\Entity\Collection\Collection', $embeddedCollection);
+        $this->assertSame(12, $embeddedCollection->getAt(0)
+            ->getId());
+        $this->assertSame(13, $embeddedCollection->getAt(1)
+            ->getId());
+    }
+
+
     public function testCreateWithInvalidData()
     {
         $this->setExpectedException('InoPerunApi\Entity\Factory\Exception\InvalidEntityDataException');
@@ -107,7 +177,7 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreateEntity()
     {
         $data = array(
-            'id' => 123, 
+            'id' => 123,
             'beanName' => 'foo'
         );
         $entity = $this->factory->createEntity($data);
@@ -120,16 +190,16 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $data = array(
             array(
-                'id' => 123, 
+                'id' => 123,
                 'beanName' => 'foo'
-            ), 
+            ),
             array(
-                'id' => 456, 
+                'id' => 456,
                 'beanName' => 'foo'
             )
         );
         $entities = array(
-            $this->getMock('InoPerunApi\Entity\EntityInterface'), 
+            $this->getMock('InoPerunApi\Entity\EntityInterface'),
             $this->getMock('InoPerunApi\Entity\EntityInterface')
         );
         
