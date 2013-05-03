@@ -16,8 +16,18 @@ class GenericFactory implements FactoryInterface
      */
     protected $beanPropertyName = null;
 
+    /**
+     * The default class used for creating entities.
+     * 
+     * @var string
+     */
     protected $defaultEntityClass = 'InoPerunApi\Entity\GenericEntity';
 
+    /**
+     * Mapping between beans and PHP classes.
+     * 
+     * @var array
+     */
     protected $beanToEntityClassMappings = array(
         'userBean' => 'InoPerunApi\Entity\User'
     );
@@ -158,9 +168,35 @@ class GenericFactory implements FactoryInterface
      * @param array $data
      * @return EntityInterface
      */
-    protected function simpleCreateEntity(array $data)
+    public function simpleCreateEntity(array $data)
     {
-        return new GenericEntity($data);
+        $beanName = $this->getBeanName($data);
+        if (null === $beanName) {
+            throw new Exception\InvalidEntityDataException('Missing bean name in entity data');
+        }
+        
+        $className = $this->getEntityClassForBean($beanName);
+        if (! class_exists($className)) {
+            throw new Exception\EntityClassNotFoundException($className);
+        }
+        
+        return new $className($data);
+    }
+
+
+    /**
+     * Extracts and returns the bean name from the data.
+     * 
+     * @param array $data
+     * @return string|null
+     */
+    protected function getBeanName(array $data)
+    {
+        if (isset($data[$this->getBeanPropertyName()])) {
+            return $data[$this->getBeanPropertyName()];
+        }
+        
+        return null;
     }
 
 
