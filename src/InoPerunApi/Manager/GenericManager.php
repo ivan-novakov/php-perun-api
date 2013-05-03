@@ -111,10 +111,20 @@ class GenericManager
         }
         return $this->entityFactory;
     }
-    
-    
+
+
     public function callMethod($methodName, array $params = array(), $changeState = false)
     {
+        try {
+            $response = $this->client->sendRequest($this->managerName, $methodName, $params, $changeState);
+        } catch (\Exception $e) {
+            throw new Exception\ClientRuntimeException(sprintf("Exception during client request: [%s] %s", get_class($e), $e->getMessage()), null, $e);
+        }
         
+        if ($response->isError()) {
+            throw new Exception\PerunErrorException($response->getErrorId(), $response->getErrorType(), $response->getErrorMessage(), $response->isPerunException());
+        }
+        
+        return $this->getEntityFactory()->createFromResponsePayload($response->getPayload());
     }
 }

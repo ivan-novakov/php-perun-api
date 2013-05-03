@@ -12,6 +12,8 @@ class Response
 
     const PARAM_ERROR_INFO = 'errorInfo';
 
+    const PARAM_ERROR_IS_PERUN_EXCEPTION = 'isPerunException';
+
     /**
      * The corresponding request.
      * 
@@ -114,5 +116,21 @@ class Response
     public function getErrorMessage()
     {
         return $this->payload->getParam(self::PARAM_ERROR_INFO);
+    }
+
+
+    /**
+     * Returns true, if the error response is a Perun exception.
+     * 
+     * @return boolean
+     */
+    public function isPerunException()
+    {
+        $isPerunException = $this->payload->getParam(self::PARAM_ERROR_IS_PERUN_EXCEPTION);
+        if ($isPerunException && $isPerunException == 'true') {
+            return true;
+        }
+        
+        return false;
     }
 }

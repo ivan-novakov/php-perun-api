@@ -4,6 +4,7 @@ namespace InoPerunApi\Entity\Factory;
 
 use InoPerunApi\Entity\GenericEntity;
 use InoPerunApi\Entity\Collection\Collection;
+use InoPerunApi\Client\Payload;
 
 
 class GenericFactory implements FactoryInterface
@@ -78,6 +79,16 @@ class GenericFactory implements FactoryInterface
     public function getBeanToEntityClassMappings()
     {
         return $this->beanToEntityClassMappings;
+    }
+
+
+    /**
+     * {@inheritdoc}
+     * @see \InoPerunApi\Entity\Factory\FactoryInterface::createFromResponsePayload()
+     */
+    public function createFromResponsePayload(Payload $payload)
+    {
+        return $this->create($payload->getParams());
     }
 
 

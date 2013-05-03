@@ -50,6 +50,33 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testCreateFromResponsePayload()
+    {
+        $params = array(
+            'foo' => 'bar'
+        );
+        
+        $payload = $this->getMock('InoPerunApi\Client\Payload');
+        $payload->expects($this->once())
+            ->method('getParams')
+            ->will($this->returnValue($params));
+        
+        $entity = $this->getMock('InoPerunApi\Entity\EntityInterface');
+        
+        $factory = $this->getMockBuilder('InoPerunApi\Entity\Factory\GenericFactory')
+            ->setMethods(array(
+            'create'
+        ))
+            ->getMock();
+        $factory->expects($this->once())
+            ->method('create')
+            ->with($params)
+            ->will($this->returnValue($entity));
+        
+        $entity = $factory->createFromResponsePayload($payload);
+    }
+
+
     public function testCreateWithEmptyArray()
     {
         $this->assertNull($this->factory->create(array()));

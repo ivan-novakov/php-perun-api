@@ -54,9 +54,93 @@ class GenericManagerTest extends \PHPUnit_Framework_TestCase
         $this->manager->setEntityFactory($entityFactory);
         $this->assertSame($entityFactory, $this->manager->getEntityFactory());
     }
+
+
+    public function testCallMethodWithClientRuntimeException()
+    {
+        $this->setExpectedException('InoPerunApi\Manager\Exception\ClientRuntimeException');
+        
+        $managerName = 'fooManager';
+        $methodName = 'fooMethod';
+        $params = array(
+            'foo' => 'bar'
+        );
+        $changeState = true;
+        
+        $client = $this->createClientMock();
+        $client->expects($this->once())
+            ->method('sendRequest')
+            ->with($managerName, $methodName, $params, $changeState)
+            ->will($this->throwException(new \Exception()));
+        $this->manager->setClient($client);
+        
+        $this->manager->setManagerName($managerName);
+        $this->manager->callMethod($methodName, $params, $changeState);
+    }
+
+
+    public function testCallMethodWithPerunError()
+    {
+        $this->setExpectedException('InoPerunApi\Manager\Exception\PerunErrorException');
+        
+        $managerName = 'fooManager';
+        $methodName = 'fooMethod';
+        $params = array(
+            'foo' => 'bar'
+        );
+        $changeState = true;
+        
+        $response = $this->createResponseMock(true);
+        
+        $client = $this->createClientMock();
+        $client->expects($this->once())
+            ->method('sendRequest')
+            ->with($managerName, $methodName, $params, $changeState)
+            ->will($this->returnValue($response));
+        $this->manager->setClient($client);
+        
+        $this->manager->setManagerName($managerName);
+        $this->manager->callMethod($methodName, $params, $changeState);
+    }
+
+
+    public function testCallMethod()
+    {
+        $managerName = 'fooManager';
+        $methodName = 'fooMethod';
+        $params = array(
+            'foo' => 'bar'
+        );
+        $changeState = true;
+        
+        $payload = $this->getMock('InoPerunApi\Client\Payload');
+        $response = $this->createResponseMock();
+        $response->expects($this->once())
+            ->method('getPayload')
+            ->will($this->returnValue($payload));
+        
+        $client = $this->createClientMock();
+        $client->expects($this->once())
+            ->method('sendRequest')
+            ->with($managerName, $methodName, $params, $changeState)
+            ->will($this->returnValue($response));
+        $this->manager->setClient($client);
+        
+        $entity = $this->getMock('InoPerunApi\Entity\EntityInterface');
+        
+        $entityFactory = $this->getMock('InoPerunApi\Entity\Factory\FactoryInterface');
+        $entityFactory->expects($this->once())
+            ->method('createFromResponsePayload')
+            ->with($payload)
+            ->will($this->returnValue($entity));
+        $this->manager->setEntityFactory($entityFactory);
+        
+        $this->manager->setManagerName($managerName);
+        $entity = $this->manager->callMethod($methodName, $params, $changeState);
+    }
     
     // ------------
-    protected function createClientMock()
+    protected function createClientMock($response = null)
     {
         $client = $this->getMockBuilder('InoPerunApi\Client\Client')
             ->disableOriginalConstructor()
@@ -71,5 +155,18 @@ class GenericManagerTest extends \PHPUnit_Framework_TestCase
         $entityFactory = $this->getMock('InoPerunApi\Entity\Factory\FactoryInterface');
         
         return $entityFactory;
+    }
+
+
+    protected function createResponseMock($isError = false)
+    {
+        $response = $this->getMockBuilder('InoPerunApi\Client\Response')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $response->expects($this->once())
+            ->method('isError')
+            ->will($this->returnValue($isError));
+        
+        return $response;
     }
 }

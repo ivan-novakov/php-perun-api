@@ -25,15 +25,17 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $errorId = 'testid';
         $errorType = 'testtype';
         $errorMessage = 'testmessage';
+        $isPerunException = 'true';
         
         $request = $this->getRequestMock();
-        $payload = $this->getPayloadMock($errorId, $errorType, $errorMessage);
+        $payload = $this->getPayloadMock($errorId, $errorType, $errorMessage, $isPerunException);
         $response = new Response($request, $payload);
         
         $this->assertTrue($response->isError());
         $this->assertSame($errorId, $response->getErrorId());
         $this->assertSame($errorType, $response->getErrorType());
         $this->assertSame($errorMessage, $response->getErrorMessage());
+        $this->assertTrue($response->isPerunException());
     }
     
     // ---------------------
@@ -47,7 +49,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    protected function getPayloadMock($errorId = null, $errorType = null, $errorMessage = null)
+    protected function getPayloadMock($errorId = null, $errorType = null, $errorMessage = null, $isPerunException = null)
     {
         $payload = $this->getMock('InoPerunApi\Client\Payload');
         if ($errorId) {
@@ -67,6 +69,10 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
                 ->method('getParam')
                 ->with(Response::PARAM_ERROR_INFO)
                 ->will($this->returnValue($errorMessage));
+            $payload->expects($this->at(4))
+                ->method('getParam')
+                ->with(Response::PARAM_ERROR_IS_PERUN_EXCEPTION)
+                ->will($this->returnValue($isPerunException));
         }
         
         return $payload;
