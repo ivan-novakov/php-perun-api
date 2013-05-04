@@ -118,13 +118,31 @@ class GenericManager
         try {
             $response = $this->client->sendRequest($this->managerName, $methodName, $params, $changeState);
         } catch (\Exception $e) {
-            throw new Exception\ClientRuntimeException(sprintf("Exception during client request: [%s] %s", get_class($e), $e->getMessage()), null, $e);
+            throw new Exception\ClientRuntimeException(
+                sprintf("Exception during client request: [%s] %s", get_class($e), $e->getMessage()), null, $e);
         }
         
         if ($response->isError()) {
-            throw new Exception\PerunErrorException($response->getErrorId(), $response->getErrorType(), $response->getErrorMessage(), $response->isPerunException());
+            throw new Exception\PerunErrorException($response->getErrorId(), $response->getErrorType(), 
+                $response->getErrorMessage(), $response->isPerunException());
         }
         
-        return $this->getEntityFactory()->createFromResponsePayload($response->getPayload());
+        return $this->getEntityFactory()
+            ->createFromResponsePayload($response->getPayload());
+    }
+
+
+    public function __call($methodName, array $arguments)
+    {
+        $arguments = array_merge(array(
+            $methodName
+        ), $arguments);
+        
+        $response = call_user_func_array(array(
+            $this,
+            'callMethod'
+        ), $arguments);
+        
+        return $response;
     }
 }

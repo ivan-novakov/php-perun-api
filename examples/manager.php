@@ -12,8 +12,14 @@ $client = $clientFactory->createClient($config);
 $usersManager = new GenericManager($client);
 $usersManager->setManagerName('usersManager');
 
+/*
 $user = $usersManager->callMethod('getRichUserWithAttributes', array(
     'user' => 13521
 ));
+*/
 
-_dump($user->getUserAttributes());
+$user = $usersManager->getRichUserWithAttributes(array(
+    'user' => 13521
+));
+
+_dump($user);

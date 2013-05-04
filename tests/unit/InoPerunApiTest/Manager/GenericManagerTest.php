@@ -138,6 +138,33 @@ class GenericManagerTest extends \PHPUnit_Framework_TestCase
         $this->manager->setManagerName($managerName);
         $entity = $this->manager->callMethod($methodName, $params, $changeState);
     }
+
+
+    public function testMagicCall()
+    {
+        $methodName = 'fooMethod';
+        $params = array(
+            'foo' => 'bar'
+        );
+        $changeState = true;
+        
+        $entity = $this->getMock('InoPerunApi\Entity\EntityInterface');
+        
+        $manager = $this->getMockBuilder('InoPerunApi\Manager\GenericManager')
+            ->disableOriginalConstructor()
+            ->setMethods(array(
+            'callMethod'
+        ))
+            ->getMock();
+        $manager->expects($this->once())
+            ->method('callMethod')
+            ->with($methodName, $params, $changeState)
+            ->will($this->returnValue($entity));
+        
+        $resultEntity = $manager->$methodName($params, $changeState);
+        
+        $this->assertSame($entity, $resultEntity);
+    }
     
     // ------------
     protected function createClientMock($response = null)
