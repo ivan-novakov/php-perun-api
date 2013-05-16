@@ -3,7 +3,6 @@
 namespace InoPerunApi\Entity\Factory;
 
 use InoPerunApi\Client\Payload;
-use InoPerunApi\Entity;
 
 
 interface FactoryInterface

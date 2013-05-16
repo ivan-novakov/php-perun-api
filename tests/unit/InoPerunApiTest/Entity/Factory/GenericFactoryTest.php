@@ -138,25 +138,26 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
         $simpleArray = array(
             'some_key' => 'some_value'
         );
+        
         $data = array(
             'id' => 123,
-            'beanName' => 'foo',
+            'beanName' => 'generic',
             
             'simpleArray' => $simpleArray,
             
             'embeddedEntity' => array(
                 'name' => 'embedded entity',
-                'beanName' => 'embedded'
+                'beanName' => 'generic'
             ),
             
             'embeddedCollection' => array(
                 array(
                     'id' => 12,
-                    'beanName' => 'embeddedCol'
+                    'beanName' => 'generic'
                 ),
                 array(
                     'id' => 13,
-                    'beanName' => 'embeddedCol'
+                    'beanName' => 'generic'
                 )
             )
         );
@@ -164,13 +165,11 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
         $entity = $this->factory->create($data);
         $this->assertInstanceOf('InoPerunApi\Entity\EntityInterface', $entity);
         $this->assertSame(123, $entity->getId());
-        $this->assertSame('foo', $entity->getEntityName());
         $this->assertSame($simpleArray, $entity->getSimpleArray());
         
         $embeddedEntity = $entity->getEmbeddedEntity();
         $this->assertInstanceOf('InoPerunApi\Entity\EntityInterface', $embeddedEntity);
         $this->assertSame('embedded entity', $embeddedEntity->getName());
-        $this->assertSame('embedded', $embeddedEntity->getEntityName());
         
         $embeddedCollection = $entity->getEmbeddedCollection();
         $this->assertInstanceOf('InoPerunApi\Entity\Collection\Collection', $embeddedCollection);
@@ -205,11 +204,11 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $data = array(
             'id' => 123,
-            'beanName' => 'foo'
+            'beanName' => 'generic'
         );
         $entity = $this->factory->createEntity($data);
         $this->assertInstanceOf('InoPerunApi\Entity\EntityInterface', $entity);
-        $this->assertSame(123, $entity->getProperty('id'));
+        $this->assertSame(123, $entity->getId());
     }
 
 

@@ -30,7 +30,8 @@ class GenericFactory implements FactoryInterface
      * @var array
      */
     protected $beanToEntityClassMappings = array(
-        'userBean' => 'InoPerunApi\Entity\User'
+        'userBean' => 'InoPerunApi\Entity\User',
+        'Group' => 'InoPerunApi\Entity\Group'
     );
 
 
@@ -190,7 +191,7 @@ class GenericFactory implements FactoryInterface
         if (! class_exists($className)) {
             throw new Exception\EntityClassNotFoundException($className);
         }
-        
+   
         return new $className($data);
     }
 

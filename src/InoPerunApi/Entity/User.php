@@ -13,4 +13,6 @@ namespace InoPerunApi\Entity;
  */
 class User extends GenericEntity
 {
+
+    protected $entityBeanName = 'User';
 }
