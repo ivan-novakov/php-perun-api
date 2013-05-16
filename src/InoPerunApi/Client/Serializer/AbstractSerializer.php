@@ -14,7 +14,6 @@ abstract class AbstractSerializer implements SerializerInterface
 
     /**
 	 * The MIME type of the serialized data.
-	 * 
 	 * @var string
 	 */
     protected $mimeType = 'text/plain';

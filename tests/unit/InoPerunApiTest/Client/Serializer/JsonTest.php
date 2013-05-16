@@ -2,8 +2,12 @@
 
 namespace InoPerunApiTest\Client\Serializer;
 
+use InoPerunApi\Client\Serializer\Json;
+
+
 class JsonTest extends \PHPUnit_Framework_TestCase
 {
+
 
     public function testSerialize()
     {
@@ -27,6 +31,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         
         $expectedData = $serializer->serialize($payload);
     }
+
 
     public function testUnserialize()
     {
@@ -52,7 +57,8 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expectedPayload, $payload);
     }
 
-    public function testUnserializeWithException()
+
+    public function testUnserializeWithUnserializeException()
     {
         $this->setExpectedException('InoPerunApi\Client\Serializer\Exception\UnserializeException');
         
@@ -72,5 +78,33 @@ class JsonTest extends \PHPUnit_Framework_TestCase
         $payload = $this->getMock('InoPerunApi\Client\Payload');
         
         $serializer->unserialize($data, $payload);
+    }
+
+
+    public function testUnserializeWithUnexpectedResultException()
+    {
+        $this->setExpectedException('InoPerunApi\Client\Serializer\Exception\UnexpectedResultException');
+        
+        $result = 'non-array result';
+        $data = '{"foo":"bar"}';
+        
+        $serializer = $this->getMock('InoPerunApi\Client\Serializer\Json', array(
+            'jsonDecode'
+        ));
+        $serializer->expects($this->once())
+            ->method('jsonDecode')
+            ->with($data)
+            ->will($this->returnValue($result));
+        
+        $payload = $this->getMock('InoPerunApi\Client\Payload');
+        
+        $serializer->unserialize($data, $payload);
+    }
+
+
+    public function testJsonEncodeEmptyArray()
+    {
+        $serializer = new Json();
+        $this->assertSame('{}', $serializer->jsonEncode(array()));
     }
 }
