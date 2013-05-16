@@ -6,6 +6,7 @@ use Zend\Console\Console;
 use Zend\Console\Getopt;
 use Zend\Console\ColorInterface;
 use InoPerunApi\Client as PerunClient;
+use InoPerunApi\Entity\Factory\GenericFactory;
 require __DIR__ . '/../vendor/autoload.php';
 
 try {
@@ -90,7 +91,9 @@ class Client
         $data = $this->_processResultData($response->getPayload()
             ->getParams(), $this->options->getFilter());
         
-        print_r($data);
+        $entityFactory = new GenericFactory();
+        $entity = $entityFactory->create($data);
+        print_r($entity);
         
         $this->_showInfo('Result OK');
         $this->_exit(0);
