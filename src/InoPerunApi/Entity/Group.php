@@ -6,6 +6,8 @@ namespace InoPerunApi\Entity;
 /**
  * Group entity.
  * 
+ * @link http://perun.metacentrum.cz/javadoc/cz/metacentrum/perun/core/api/Group.html
+ * 
  * @method string getName()
  * @method string getDescription()
  * @method integer getParentGroupId()
