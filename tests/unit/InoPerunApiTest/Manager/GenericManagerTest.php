@@ -165,6 +165,53 @@ class GenericManagerTest extends \PHPUnit_Framework_TestCase
         
         $this->assertSame($entity, $resultEntity);
     }
+
+
+    public function testParamsToArray()
+    {
+        $entityData1 = array(
+            'e1key1' => 'e1value1'
+        );
+        
+        $entity1 = $this->getMock('InoPerunApi\Entity\EntityInterface');
+        $entity1->expects($this->once())
+            ->method('getProperties')
+            ->will($this->returnValue($entityData1));
+        
+        $entityData2 = array(
+            'e1key2' => 'e1value2'
+        );
+        $entity2 = $this->getMock('InoPerunApi\Entity\EntityInterface');
+        $entity2->expects($this->once())
+            ->method('getProperties')
+            ->will($this->returnValue($entityData2));
+        
+        $params = array(
+            'key1' => 'value1',
+            'key2' => 'value2',
+            'complex' => array(
+                'key3' => 'value3'
+            ),
+            'entity' => $entity1,
+            'collection' => array(
+                'embeddedEntity' => $entity2
+            )
+        );
+        
+        $expected = array(
+            'key1' => 'value1',
+            'key2' => 'value2',
+            'complex' => array(
+                'key3' => 'value3'
+            ),
+            'entity' => $entityData1,
+            'collection' => array(
+                'embeddedEntity' => $entityData2
+            )
+        );
+        
+        $this->assertSame($expected, $this->manager->paramsToArray($params));
+    }
     
     // ------------
     protected function createClientMock($response = null)

@@ -4,6 +4,8 @@ namespace InoPerunApi\Manager;
 
 use InoPerunApi\Client\Client;
 use InoPerunApi\Entity;
+use InoPerunApi\Entity\EntityInterface;
+use InoPerunApi\Entity\Collection\Collection;
 
 
 class GenericManager
@@ -113,25 +115,40 @@ class GenericManager
     }
 
 
+    /**
+     * Performs a remote call to a manager method.
+     * @param string $methodName
+     * @param array $params
+     * @param string $changeState
+     * @throws Exception\ClientRuntimeException
+     * @throws Exception\PerunErrorException
+     * @return EntityInterface|Collection
+     */
     public function callMethod($methodName, array $params = array(), $changeState = false)
     {
+        $params = $this->paramsToArray($params);
+        
         try {
             $response = $this->client->sendRequest($this->managerName, $methodName, $params, $changeState);
         } catch (\Exception $e) {
-            throw new Exception\ClientRuntimeException(
-                sprintf("Exception during client request: [%s] %s", get_class($e), $e->getMessage()), null, $e);
+            throw new Exception\ClientRuntimeException(sprintf("Exception during client request: [%s] %s", get_class($e), $e->getMessage()), null, $e);
         }
         
         if ($response->isError()) {
-            throw new Exception\PerunErrorException($response->getErrorId(), $response->getErrorType(), 
-                $response->getErrorMessage(), $response->isPerunException());
+            throw new Exception\PerunErrorException($response->getErrorId(), $response->getErrorType(), $response->getErrorMessage(), $response->isPerunException());
         }
         
-        return $this->getEntityFactory()
-            ->createFromResponsePayload($response->getPayload());
+        return $this->getEntityFactory()->createFromResponsePayload($response->getPayload());
     }
 
 
+    /**
+     * The magic call handler intercepts all non-existent methods and treats them as remote manager calls.
+     * 
+     * @param string $methodName
+     * @param array $arguments
+     * @return EntityInterface|Collection
+     */
     public function __call($methodName, array $arguments)
     {
         $arguments = array_merge(array(
@@ -144,5 +161,29 @@ class GenericManager
         ), $arguments);
         
         return $response;
+    }
+
+
+    /**
+     * The method recursively traverses the parameters and turns all entities into arrays.
+     * 
+     * @param array $params
+     * @return array
+     */
+    public function paramsToArray(array $params)
+    {
+        foreach ($params as $name => $value) {
+            if (is_array($value)) {
+                $params[$name] = $this->paramsToArray($value);
+                continue;
+            }
+            
+            if ($value instanceof EntityInterface) {
+                $params[$name] = $value->getProperties();
+                continue;
+            }
+        }
+        
+        return $params;
     }
 }
