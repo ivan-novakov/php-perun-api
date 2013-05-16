@@ -91,9 +91,13 @@ class Client
         $data = $this->_processResultData($response->getPayload()
             ->getParams(), $this->options->getFilter());
         
-        $entityFactory = new GenericFactory();
-        $entity = $entityFactory->create($data);
-        print_r($entity);
+        if ($this->options->getOption('entity')) {
+            $entityFactory = new GenericFactory();
+            $entity = $entityFactory->create($data);
+            print_r($entity);
+        } else {
+            print_r($data);
+        }
         
         $this->_showInfo('Result OK');
         $this->_exit(0);
@@ -238,6 +242,12 @@ class Options
     }
 
 
+    public function getOption($name)
+    {
+        return $this->consoleOptions->getOption($name);
+    }
+
+
     public function getFilter()
     {
         $filter = $this->consoleOptions->getOption(self::OPT_FILTER);
@@ -312,8 +322,9 @@ class Options
             'function|f=s' => 'the function of the remote manager to be called',
             'args|a=s' => 'function arguments - key/value comma separated, for example: key1=value1,key2=value2, ...',
             'filter|F=s' => 'filter attributes',
-            'payload|p=s' => 'instead of passing arguments, it is possible to pass the whole request payload as a string'
-        ));
+            'entity|e' => 'return result as entity'
+        // 'payload|p=s' => 'instead of passing arguments, it is possible to pass the whole request payload as a string'
+                ));
         $opts->setOptions(array(
             Getopt::CONFIG_PARAMETER_SEPARATOR => ','
         ));
