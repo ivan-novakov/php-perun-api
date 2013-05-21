@@ -118,3 +118,8 @@ We instantiate a "manager" object and pass a client object instance to its const
 
 * [The Perun Project](http://perun.metacentrum.cz/web/index.shtml)
 * [CESNET](http://www.ces.net/)
+
+
+## Author
+
+* [Ivan Novakov](http://novakov.cz/)
