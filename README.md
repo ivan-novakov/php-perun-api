@@ -1,6 +1,10 @@
 # PHP Perun API
 
-A client library written in PHP to consume [Perun](http://perun.metacentrum.cz/web/index.shtml) REST API
+A client library written in PHP to consume [Perun](http://perun.metacentrum.cz/web/index.shtml) REST API.
+
+## Intro
+
+This software is being developed as a part of the Shongo Project initiated by [CESNET, a. l. e.](http://www.ces.net/).
 
 
 ## Requirements
@@ -66,15 +70,15 @@ Once the we have the configuration, we can initialize the client:
     $clientFactory = new ClientFactory();
     $client = $clientFactory->createClient($config);
     
-After that, we can send requests to the remote API. For each Perun entity, there is a dedicated "manager" object, which can handle calls specific to the corresponding entity. For example, to get the user by its ID, we need to call the `getUserById` method of the `usersManager`:
+After that, we can send requests to the remote API. For each Perun entity, there is a dedicated "manager" object, which can handle calls specific to the corresponding entity. For example, to get the user by its ID, we need to call the `getUserById` method of the `usersManager`. Any method arguments we need to pass should be included in the third argument of the `sendRequest` call:
 
-try {
-    $perunResponse = $client->sendRequest('usersManager', 'getUserById', array(
-        'id' => 1234
-    ));
-} catch (\Exception $e) {
-    // handle exception
-}
+    try {
+        $perunResponse = $client->sendRequest('usersManager', 'getUserById', array(
+            'id' => 1234
+        ));
+    } catch (\Exception $e) {
+        // handle exception
+    }
 
 If there are problems while connecting to the remote API or if the response cannot be parsed properly, an exception will be thrown. Otherwise, we still need to check, if the request was successful:
 
@@ -88,6 +92,22 @@ If there is no error, we can access the response through the `Payload` object:
     $payload = $perunResponse->getPayload();
     printf("User: %s %s\n", $payload->getParam('firstName'), $payload->getParam('lastName));
     
+    
+## Advanced usage (experimental)
+
+The library may be used in a more intuitive way, which tries to "hide" the fact, that we are calling a remote API. The library tries to "mimic" the remote manager and entity objects:
+
+    $usersManager = new GenericManager($client);
+    $usersManager->setManagerName('usersManager');
+    
+    $user = $usersManager->getUserById(array(
+        'user' => 1234
+    ));
+    
+    printf("User: %s %s\n", $user->getFirstName(), $user->getLastName());
+    
+We instantiate a "manager" object and pass a client object instance to its constructor. When we call a method on this object, it is caught by the magic `__call()` method and a client request is constructed and dispatched. If the call was succesful, the `User` entity is populated with data and returned.
+
     
 ## License
 
