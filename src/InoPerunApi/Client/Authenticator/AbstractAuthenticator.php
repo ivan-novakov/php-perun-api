@@ -5,7 +5,7 @@ namespace InoPerunApi\Client\Authenticator;
 use InoPerunApi\Exception as GeneralException;
 
 
-abstract class AbstractAuthenticator implements AuthenticatorInterface
+abstract class AbstractAuthenticator
 {
 
     /**

@@ -1,10 +1,14 @@
 <?php
+
 namespace InoPerunApi\Client;
 
 use InoPerunApi\Client\Http;
 use InoPerunApi\Client\Serializer\SerializerInterface;
-use InoPerunApi\Client\Authenticator\AuthenticatorInterface;
 use InoPerunApi\Client\Serializer\Exception\UnserializeException;
+use InoPerunApi\Client\Authenticator\AuthenticatorInterface;
+use InoPerunApi\Client\Authenticator\ClientAuthenticatorInterface;
+use InoPerunApi\Client\Authenticator\RequestAuthenticatorInterface;
+
 
 class Client
 {
@@ -51,6 +55,7 @@ class Client
      */
     protected $authenticator = null;
 
+
     /**
      * Constructor.
      *
@@ -58,12 +63,13 @@ class Client
      * @param \Zend\Http\Client $httpClient            
      * @param SerializerInterface $serializer            
      */
-    public function __construct($options,\Zend\Http\Client $httpClient, SerializerInterface $serializer)
+    public function __construct($options, \Zend\Http\Client $httpClient, SerializerInterface $serializer)
     {
         $this->setOptions($options);
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;
     }
+
 
     /**
      * Sets the client options.
@@ -79,6 +85,7 @@ class Client
         $this->options = $options;
     }
 
+
     /**
      * Returns the client options.
      *
@@ -88,6 +95,7 @@ class Client
     {
         return $this->options;
     }
+
 
     /**
      * Returns the HTTP client.
@@ -99,6 +107,7 @@ class Client
         return $this->httpClient;
     }
 
+
     /**
      * Sets the HTTP request factory.
      *
@@ -108,6 +117,7 @@ class Client
     {
         $this->httpRequestFactory = $httpRequestFactory;
     }
+
 
     /**
      * Returns the HTTP request factory.
@@ -122,6 +132,7 @@ class Client
         return $this->httpRequestFactory;
     }
 
+
     /**
      * Sets the authenticator.
      *
@@ -131,7 +142,12 @@ class Client
     public function setAuthenticator(AuthenticatorInterface $authenticator)
     {
         $this->authenticator = $authenticator;
+        
+        if ($this->authenticator instanceof ClientAuthenticatorInterface) {
+            $this->authenticator->configureClient($this->httpClient);
+        }
     }
+
 
     /**
      * Returns the authenticator.
@@ -143,6 +159,7 @@ class Client
         return $this->authenticator;
     }
 
+
     /**
      * Sets the Perun response factory.
      *
@@ -152,6 +169,7 @@ class Client
     {
         $this->responseFactory = $responseFactory;
     }
+
 
     /**
      * Returns the Perun response factory.
@@ -168,6 +186,7 @@ class Client
         return $this->responseFactory;
     }
 
+
     /**
      * Sets the Perun request factory.
      *
@@ -177,6 +196,7 @@ class Client
     {
         $this->requestFactory = $requestFactory;
     }
+
 
     /**
      * Returns the Perun request factory.
@@ -191,6 +211,7 @@ class Client
         return $this->requestFactory;
     }
 
+
     /**
      * Sends a request to the Perun server and returns the response.
      *
@@ -203,7 +224,7 @@ class Client
     {
         $httpRequest = $this->getHttpRequestFactory()->createRequest($this->options->getUrl(), $request);
         
-        if ($this->authenticator instanceof AuthenticatorInterface) {
+        if ($this->authenticator instanceof RequestAuthenticatorInterface) {
             $this->authenticator->configureRequest($httpRequest);
         }
         
@@ -219,6 +240,7 @@ class Client
             throw new Exception\InvalidResponseException(sprintf("Invalid server response, status code: %d", $httpResponse->getStatusCode()), null, $e);
         }
     }
+
 
     /**
      * Convenient method for sending requests to the Perun server.

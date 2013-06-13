@@ -1,9 +1,11 @@
 <?php
+
 namespace InoPerunApi\Client\Authenticator;
 
 use Zend\Http\Header\Cookie;
 
-class BasicAuth extends AbstractAuthenticator
+
+class BasicAuth extends AbstractAuthenticator implements RequestAuthenticatorInterface
 {
 
     const OPT_AUTHORIZATION = 'authorization';
@@ -12,10 +14,9 @@ class BasicAuth extends AbstractAuthenticator
 
     const OPT_COOKIE_VALUE = 'cookie_value';
 
+
     /**
-     *
-     * @ERROR!!!
-     *
+     * {@inheritdoc}
      * @see \InoPerunApi\Client\Authenticator\AuthenticatorInterface::configureRequest()
      */
     public function configureRequest(\Zend\Http\Request $httpRequest)

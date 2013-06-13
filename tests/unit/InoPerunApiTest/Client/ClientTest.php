@@ -67,6 +67,22 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testSetAuthenticatorWithClientAuthenticator()
+    {
+        $httpClient = $this->createHttpClientMock();
+        
+        $authenticator = $this->createAuthenticatorMock(null, 'ClientAuthenticatorInterface');
+        $authenticator->expects($this->once())
+            ->method('configureClient')
+            ->with($httpClient);
+        
+        $client = $this->createClient();
+        $client->setAuthenticator($authenticator);
+        
+        $this->assertSame($authenticator, $client->getAuthenticator());
+    }
+
+
     public function testSendWithConnectionException()
     {
         $this->setExpectedException('InoPerunApi\Client\Exception\ConnectionException');
@@ -83,7 +99,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         
         $httpRequestFactory = $this->createHttpRequestFactoryMock($httpRequest, $request, $url);
         
-        $authenticator = $this->createAuthenticatorMock($httpRequest);
+        $authenticator = $this->createAuthenticatorMock($httpRequest, 'RequestAuthenticatorInterface');
         
         $httpClient = $this->createHttpClientMock();
         $httpClient->expects($this->once())
@@ -117,7 +133,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         
         $httpRequestFactory = $this->createHttpRequestFactoryMock($httpRequest, $request, $url);
         
-        $authenticator = $this->createAuthenticatorMock($httpRequest);
+        $authenticator = $this->createAuthenticatorMock($httpRequest, 'RequestAuthenticatorInterface');
         
         $httpClient = $this->createHttpClientMock();
         $httpClient->expects($this->once())
@@ -157,7 +173,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         
         $httpRequestFactory = $this->createHttpRequestFactoryMock($httpRequest, $request, $url);
         
-        $authenticator = $this->createAuthenticatorMock($httpRequest);
+        $authenticator = $this->createAuthenticatorMock($httpRequest, 'RequestAuthenticatorInterface');
         
         $httpClient = $this->createHttpClientMock();
         $httpClient->expects($this->once())
@@ -189,7 +205,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $params = array(
             'foo' => 'bar'
         );
-        //$payload = $this->getMock('InoPerunApi\Client\Payload');
+        
         $changeState = true;
         
         $request = $this->createRequestMock();
@@ -277,9 +293,16 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    protected function createAuthenticatorMock($httpRequest = null)
+    protected function createAuthenticatorMock($httpRequest = null, $specificInterface = null)
     {
-        $authenticator = $this->getMock('InoPerunApi\Client\Authenticator\AuthenticatorInterface');
+        $interfacePrefix = 'InoPerunApi\Client\Authenticator';
+        if ($specificInterface) {
+            $interfaceName = $specificInterface;
+        } else {
+            $interfaceName = 'AuthenticatorInterface';
+        }
+        
+        $authenticator = $this->getMock($interfacePrefix . '\\' . $interfaceName);
         if ($httpRequest) {
             $authenticator->expects($this->once())
                 ->method('configureRequest')
