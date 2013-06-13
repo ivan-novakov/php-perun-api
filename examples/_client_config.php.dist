@@ -1,26 +1,27 @@
 <?php
+
 return array(
     
     'client' => array(
-        'url' => 'https://api.example.org/rest'
-    ), 
+        'url' => 'https://perun.example.org/perun-rpc-cert/'
+        ),
     
     'http_client' => array(
-        'adapter' => 'Zend\Http\Client\Adapter\Curl', 
-        'useragent' => 'Perun Client', 
+        'adapter' => 'Zend\Http\Client\Adapter\Curl',
+        'useragent' => 'Perun Client',
         'curloptions' => array(
-            CURLOPT_SSL_VERIFYPEER => true, 
-            CURLOPT_SSL_VERIFYHOST => 2, 
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_CAINFO => '/etc/ssl/certs/ca-bundle.pem'
         )
-    ), 
+    ),
     
     'authenticator' => array(
-        'class' => 'InoPerunApi\Client\Authenticator\BasicAuth', 
+        'class' => 'InoPerunApi\Client\Authenticator\ClientCertificate',
         'options' => array(
-            'cookie_name' => 'PERUNSESSION', 
-            'cookie_value' => 'xxx', 
-            'authorization' => 'Basic xxx'
+            'key_file' => '/tmp/key.pem',
+            'crt_file' => '/tmp/crt.pem',
+            'key_pass' => 'secret'
         )
     )
 );
