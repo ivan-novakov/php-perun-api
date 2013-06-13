@@ -50,13 +50,13 @@ The `http_client` section configures the standard HTTP client object from Zend F
                 CURLOPT_CAINFO => '/etc/ssl/certs/ca-bundle.pem'
             )
         ), 
-        
+     
         'authenticator' => array(
-            'class' => 'InoPerunApi\Client\Authenticator\BasicAuth', 
+            'class' => 'InoPerunApi\Client\Authenticator\ClientCertificate',
             'options' => array(
-                'cookie_name' => 'PERUNSESSION', 
-                'cookie_value' => '_cookie_value_', 
-                'authorization' => 'Basic _hashed_username_and_password_'
+                'key_file' => '/tmp/key.pem',
+                'crt_file' => '/tmp/crt.pem',
+                'key_pass' => 'secret'
             )
         )
     );
