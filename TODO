@@ -1,0 +1,3 @@
+
+- write better entity tests
+- enhance RichMember to return RichUser

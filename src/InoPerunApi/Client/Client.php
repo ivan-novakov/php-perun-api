@@ -14,6 +14,13 @@ class Client
 {
 
     /**
+     * Options.
+     * 
+     * @var ClientOptions
+     */
+    protected $options;
+
+    /**
      * Zend HTTP client.
      * 
      * @var \Zend\Http\Client
@@ -63,7 +70,7 @@ class Client
      * @param \Zend\Http\Client $httpClient            
      * @param SerializerInterface $serializer            
      */
-    public function __construct($options, \Zend\Http\Client $httpClient, SerializerInterface $serializer)
+    public function __construct($options,\Zend\Http\Client $httpClient, SerializerInterface $serializer)
     {
         $this->setOptions($options);
         $this->httpClient = $httpClient;
@@ -253,8 +260,11 @@ class Client
      * @param string $changeState            
      * @return Response
      */
-    public function sendRequest($managerName, $methodName, array $params = array(), $changeState = false)
+    public function sendRequest($managerName, $methodName, array $params = array(), $changeState = null)
     {
+        if (null === $changeState) {
+            $changeState = $this->options->getDefaultChangeState();
+        }
         $request = $this->getRequestFactory()->createRequest($managerName, $methodName, $params, $changeState);
         
         return $this->send($request);

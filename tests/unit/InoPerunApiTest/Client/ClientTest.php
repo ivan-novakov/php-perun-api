@@ -32,7 +32,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testSetOptions()
     {
         $options = array(
-            'url' => 'testurl'
+            'url' => 'testurl',
+            'default_change_state' => true
         );
         $client = $this->createClient();
         $client->setOptions($options);

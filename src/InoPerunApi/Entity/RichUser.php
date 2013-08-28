@@ -6,8 +6,10 @@ namespace InoPerunApi\Entity;
 /**
  * The "RichUser" entity.
  * 
- * @method \InoPerunApi\Entity\Collection\Collection getUserExtSources()
- * @method \InoPerunApi\Entity\Collection\Collection getUserAttributes()
+ * @link http://perun.metacentrum.cz/javadoc/cz/metacentrum/perun/core/api/RichUser.html
+ * 
+ * @method \InoPerunApi\Entity\Collection\UserExtSourceCollection getUserExtSources()
+ * @method \InoPerunApi\Entity\Collection\AttributeCollection getUserAttributes()
  */
 class RichUser extends User
 {

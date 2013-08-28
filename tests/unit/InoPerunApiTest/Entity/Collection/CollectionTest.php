@@ -50,6 +50,28 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testAppendWithInvalidEntity()
+    {
+        $this->setExpectedException('InoPerunApi\Entity\Collection\Exception\InvalidEntityException');
+        
+        $entities = $this->createEntityArray();
+        $collection = $this->getMockBuilder('InoPerunApi\Entity\Collection\Collection')
+            ->setMethods(array(
+            'isAllowed'
+        ))
+            ->setConstructorArgs(array(
+            $entities
+        ))
+            ->getMock();
+        $collection->expects($this->once())
+            ->method('isAllowed')
+            ->will($this->returnValue(false));
+        
+        $newEntity = $this->getMock('InoPerunApi\Entity\EntityInterface');
+        $collection->append($newEntity);
+    }
+
+
     public function testAppend()
     {
         $entities = $this->createEntityArray();

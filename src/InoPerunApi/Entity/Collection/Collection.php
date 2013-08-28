@@ -95,6 +95,15 @@ class Collection implements \Countable, \IteratorAggregate
 
     public function append(EntityInterface $entity)
     {
+        if (! $this->isAllowed($entity)) {
+            throw new Exception\InvalidEntityException(sprintf("Invalid entity '%s' for collection '%s'", get_class($entity), get_class($this)));
+        }
         $this->entities->append($entity);
+    }
+
+
+    public function isAllowed(EntityInterface $entity)
+    {
+        return true;
     }
 }

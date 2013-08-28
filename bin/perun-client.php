@@ -83,7 +83,7 @@ class Client
         
         $this->_showInfo(sprintf("Calling %s->%s (%s)", $managerName, $functionName, http_build_query($arguments, null, ', ')));
         
-        $response = $perunClient->sendRequest($managerName, $functionName, $arguments, true);
+        $response = $perunClient->sendRequest($managerName, $functionName, $arguments);
         if ($response->isError()) {
             $this->_showError(sprintf("Perun error [%s]: %s (%s)", $response->getErrorId(), $response->getErrorType(), $response->getErrorMessage()));
         }
@@ -182,6 +182,8 @@ class Options
     const OPT_FUNCTION = 'function';
 
     const OPT_ARGS = 'args';
+
+    const OPT_ARGS_FILE = 'args-file';
 
     const OPT_FILTER = 'filter';
 
@@ -284,6 +286,12 @@ class Options
         $args = $this->consoleOptions->getOption(self::OPT_ARGS);
         if ($args) {
             $this->arguments = $this->_parseArguments($args);
+        } else {
+            
+            $argsFile = $this->consoleOptions->getOption(self::OPT_ARGS_FILE);
+            if ($argsFile) {
+                $this->arguments = $this->_parseArgumentsFile($argsFile);
+            }
         }
     }
 
@@ -291,7 +299,6 @@ class Options
     protected function _parseArguments($args)
     {
         $parsedArgs = array();
-        
         if (! is_array($args)) {
             $args = array(
                 $args
@@ -307,10 +314,35 @@ class Options
             $key = trim($pair[0]);
             $value = $pair[1];
             
+            if ($value[0] == '{' || $value[0] == '[') {
+                try {
+                    $value = \Zend\Json\Json::decode($value);
+                } catch (\Exception $e) {
+                    _dump("$e");
+                    continue;
+                }
+            }
+            
             $parsedArgs[$key] = $value;
         }
         
         return $parsedArgs;
+    }
+
+
+    protected function _parseArgumentsFile($argsFile)
+    {
+        if (! file_exists($argsFile)) {
+            throw new \RuntimeException(sprintf("Non-existent file '%s'", $argsFile));
+        }
+        
+        if (! is_file($argsFile) || ! is_readable($argsFile)) {
+            throw new \RuntimeException(sprintf("Invalid file '%s'", $argsFile));
+        }
+        
+        $args = file($argsFile, FILE_IGNORE_NEW_LINES);
+        
+        return $this->_parseArguments($args);
     }
 
 
@@ -321,6 +353,7 @@ class Options
             'manager|m=s' => 'the remote manager to be used, such as "usersManager", "groupsManager" etc.',
             'function|f=s' => 'the function of the remote manager to be called',
             'args|a=s' => 'function arguments - key/value comma separated, for example: key1=value1,key2=value2, ...',
+            'args-file|x=s' => 'file with function arguments (key=value) each on a separate line - alternative way for setting function arguments',
             'filter|F=s' => 'filter attributes',
             'entity|e' => 'return result as entity'
         // 'payload|p=s' => 'instead of passing arguments, it is possible to pass the whole request payload as a string'
