@@ -17,6 +17,30 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testConstructor()
+    {
+        $client = $this->getClientMock();
+        $factory = new GenericFactory($client);
+        $this->assertSame($client, $factory->getClient());
+    }
+
+
+    public function testGetClientWithException()
+    {
+        $this->setExpectedException('InoPerunApi\Exception\MissingDependencyException');
+        
+        $this->factory->getClient();
+    }
+
+
+    public function testSetClient()
+    {
+        $client = $this->getClientMock();
+        $this->factory->setClient($client);
+        $this->assertSame($client, $this->factory->getClient());
+    }
+
+
     public function testSetSupportedManagers()
     {
         $managers = array(

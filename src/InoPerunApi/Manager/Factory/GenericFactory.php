@@ -4,10 +4,16 @@ namespace InoPerunApi\Manager\Factory;
 
 use InoPerunApi\Client\Client;
 use InoPerunApi\Manager\GenericManager;
+use InoPerunApi\Exception\MissingDependencyException;
 
 
 class GenericFactory implements FactoryInterface
 {
+
+    /**
+     * @var Client
+     */
+    protected $client;
 
     /**
      * A list of supported managers.
@@ -18,6 +24,40 @@ class GenericFactory implements FactoryInterface
         'groupsManager',
         'membersManager'
     );
+
+
+    /**
+     * Constructor.
+     * 
+     * @param Client $client
+     */
+    public function __construct(Client $client = null)
+    {
+        if (null !== $client) {
+            $this->setClient($client);
+        }
+    }
+
+
+    /**
+     * @return Client
+     */
+    public function getClient()
+    {
+        if (! $this->client instanceof Client) {
+            throw new MissingDependencyException('client', $this);
+        }
+        return $this->client;
+    }
+
+
+    /**
+     * @param Client $client
+     */
+    public function setClient(Client $client)
+    {
+        $this->client = $client;
+    }
 
 
     /**
@@ -46,8 +86,12 @@ class GenericFactory implements FactoryInterface
      * {@inheritdoc}
      * @see \InoPerunApi\Manager\Factory\FactoryInterface::createManager()
      */
-    public function createManager($managerName, Client $client)
+    public function createManager($managerName, Client $client = null)
     {
+        if (null === $client) {
+            $client = $this->getClient();
+        }
+        
         if (! $this->isSupported($managerName)) {
             throw new Exception\UnsupportedManagerException(sprintf("Unsupported manager '%s'", $managerName));
         }
