@@ -124,7 +124,7 @@ class GenericManager
      * @throws Exception\PerunErrorException
      * @return EntityInterface|Collection
      */
-    public function callMethod($methodName, array $params = array(), $changeState = false)
+    public function callMethod($methodName, array $params = array(), $changeState = null)
     {
         $params = $this->paramsToArray($params);
         
