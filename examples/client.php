@@ -18,9 +18,16 @@ try {
     exit();
 }
 
+if ($perunResponse->isError()) {
+    printf("Perun error [%s]: %s (%s)\n", $perunResponse->getErrorId(), $perunResponse->getErrorType(), $perunResponse->getErrorMessage());
+}
+
+
 _dump($client->getHttpClient()
     ->getLastRawRequest());
 _dump($client->getHttpClient()
     ->getLastRawResponse());
 _dump($perunResponse);
 
+$payload = $perunResponse->getPayload();
+_dump($payload->getParam('firstName'));
