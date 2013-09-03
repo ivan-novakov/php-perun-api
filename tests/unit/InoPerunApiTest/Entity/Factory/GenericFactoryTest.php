@@ -50,6 +50,16 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testGetEntityCollectionClassForBean()
+    {
+        $mappings = array(
+            'foo' => 'bar'
+        );
+        $this->factory->setBeanToCollectionClassMappings($mappings);
+        $this->assertSame('bar', $this->factory->getEntityCollectionClassForBean('foo'));
+    }
+
+
     public function testCreateFromResponsePayload()
     {
         $params = array(
@@ -212,43 +222,6 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testCreateEntityCollection()
-    {
-        $data = array(
-            array(
-                'id' => 123,
-                'beanName' => 'foo'
-            ),
-            array(
-                'id' => 456,
-                'beanName' => 'foo'
-            )
-        );
-        $entities = array(
-            $this->getMock('InoPerunApi\Entity\EntityInterface'),
-            $this->getMock('InoPerunApi\Entity\EntityInterface')
-        );
-        
-        $factory = $this->getMockBuilder('InoPerunApi\Entity\Factory\GenericFactory')
-            ->setMethods(array(
-            'createEntity'
-        ))
-            ->getMock();
-        
-        for ($i = 0; $i < count($data); $i ++) {
-            $factory->expects($this->at($i))
-                ->method('createEntity')
-                ->with($data[$i])
-                ->will($this->returnValue($entities[$i]));
-        }
-        
-        $collection = $factory->createEntityCollection($data);
-        $this->assertInstanceOf('InoPerunApi\Entity\Collection\Collection', $collection);
-        
-        $this->assertSame($entities, $collection->getEntities());
-    }
-
-
     public function testSimpleCreateEntityWithMissingBeanName()
     {
         $this->setExpectedException('InoPerunApi\Entity\Factory\Exception\InvalidEntityDataException');
@@ -288,5 +261,60 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
         ));
         
         $this->assertInstanceOf('__TestEntityClass', $entity);
+    }
+
+
+    public function testCreateEntityCollectionWithInvalidData()
+    {
+        $this->setExpectedException('InoPerunApi\Entity\Factory\Exception\InvalidCollectionDataException');
+        
+        $data = array(
+            'invalid data'
+        );
+        $this->factory->createEntityCollection($data);
+    }
+
+
+    public function testCreateEntityCollectionWithEmptyData()
+    {
+        $data = array();
+        $collection = $this->factory->createEntityCollection($data);
+        $this->assertInstanceOf('InoPerunApi\Entity\Collection\Collection', $collection);
+        $this->assertSame(0, $collection->count());
+    }
+
+
+    public function testCreateEntityCollection()
+    {
+        $data = array(
+            array(
+                'id' => 123,
+                'beanName' => 'Group'
+            ),
+            array(
+                'id' => 456,
+                'beanName' => 'Group'
+            )
+        );
+        
+        $entityMappings = array(
+            'Group' => 'InoPerunApi\Entity\Group'
+        );
+        
+        $collectionMappings = array(
+            'Group' => 'InoPerunApi\Entity\Collection\GroupCollection'
+        );
+        
+        $this->factory->setBeanToEntityClassMappings($entityMappings);
+        $this->factory->setBeanToCollectionClassMappings($collectionMappings);
+        
+        $collection = $this->factory->createEntityCollection($data);
+        
+        $this->assertInstanceOf('InoPerunApi\Entity\Collection\GroupCollection', $collection);
+        $this->assertSame(count($data), $collection->count());
+        
+        foreach ($collection as $entity) {
+            $this->assertInstanceOf('InoPerunApi\Entity\Group', $entity);
+        }
     }
 }
