@@ -19,5 +19,5 @@ interface FactoryInterface
      * @param Client $client
      * @return GenericManager
      */
-    public function createManager($managerName, Client $client);
+    public function createManager($managerName, Client $client = null);
 }

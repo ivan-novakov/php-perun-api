@@ -76,7 +76,7 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testCreateManager()
+    public function testCreateManagerWithPassedClient()
     {
         $managerName = 'foo';
         
@@ -85,6 +85,22 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
         ));
         
         $manager = $this->factory->createManager($managerName, $this->getClientMock());
+        $this->assertInstanceOf('InoPerunApi\Manager\GenericManager', $manager);
+        $this->assertSame($managerName, $manager->getManagerName());
+    }
+
+
+    public function testCreateManagerWithClientAddedInConstructor()
+    {
+        $managerName = 'foo';
+        
+        $client = $this->getClientMock();
+        $factory = new GenericFactory($client);
+        $factory->setSupportedManagers(array(
+            $managerName
+        ));
+        
+        $manager = $factory->createManager($managerName);
         $this->assertInstanceOf('InoPerunApi\Manager\GenericManager', $manager);
         $this->assertSame($managerName, $manager->getManagerName());
     }
