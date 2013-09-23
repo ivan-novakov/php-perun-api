@@ -213,40 +213,6 @@ class GenericFactory implements FactoryInterface
 
 
     /**
-     * Returns the entity class that corresponds to the bean. If none is defined, the default class 
-     * is returned.
-     * 
-     * @param string $beanName
-     * @return string
-     */
-    public function getEntityClassForBean($beanName)
-    {
-        if (isset($this->beanToEntityClassMappings[$beanName])) {
-            return $this->beanToEntityClassMappings[$beanName];
-        }
-        
-        return $this->defaultEntityClass;
-    }
-
-
-    /**
-     * Returns the entity collection class that corresponds to the bean.
-     * If none is defined, the default collection class is returnes.
-     * 
-     * @param string $beanName
-     * @return string
-     */
-    public function getEntityCollectionClassForBean($beanName)
-    {
-        if (isset($this->beanToCollectionClassMappings[$beanName])) {
-            return $this->beanToCollectionClassMappings[$beanName];
-        }
-        
-        return $this->defaultEntityCollectionClass;
-    }
-
-
-    /**
      * Creates the entity object.
      * 
      * @param array $data
@@ -259,11 +225,34 @@ class GenericFactory implements FactoryInterface
             throw new Exception\InvalidEntityDataException('Missing bean name in entity data');
         }
         
+        return $this->createEntityWithName($beanName, $data);
+    }
+
+
+    /**
+     * {@inhertidoc}
+     * @see \InoPerunApi\Entity\Factory\FactoryInterface::createEntityWithName()
+     */
+    public function createEntityWithName($beanName, array $data = array())
+    {
         $className = $this->getEntityClassForBean($beanName);
         if (! class_exists($className)) {
             throw new Exception\EntityClassNotFoundException($className);
         }
         
+        return $this->createEntityWithClass($className, $data);
+    }
+
+
+    /**
+     * Simply creates an entity with the provided class name and data.
+     * 
+     * @param string $className
+     * @param array $data
+     * @return EntityInterface
+     */
+    protected function createEntityWithClass($className, array $data = array())
+    {
         return new $className($data);
     }
 
@@ -281,6 +270,40 @@ class GenericFactory implements FactoryInterface
         }
         
         return null;
+    }
+
+
+    /**
+     * Returns the entity class that corresponds to the bean. If none is defined, the default class
+     * is returned.
+     *
+     * @param string $beanName
+     * @return string
+     */
+    public function getEntityClassForBean($beanName)
+    {
+        if (isset($this->beanToEntityClassMappings[$beanName])) {
+            return $this->beanToEntityClassMappings[$beanName];
+        }
+        
+        return $this->defaultEntityClass;
+    }
+
+
+    /**
+     * Returns the entity collection class that corresponds to the bean.
+     * If none is defined, the default collection class is returnes.
+     *
+     * @param string $beanName
+     * @return string
+     */
+    public function getEntityCollectionClassForBean($beanName)
+    {
+        if (isset($this->beanToCollectionClassMappings[$beanName])) {
+            return $this->beanToCollectionClassMappings[$beanName];
+        }
+        
+        return $this->defaultEntityCollectionClass;
     }
 
 

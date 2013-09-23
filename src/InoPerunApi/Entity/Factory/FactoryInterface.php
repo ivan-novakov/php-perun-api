@@ -37,6 +37,15 @@ interface FactoryInterface
 
 
     /**
+     * Creates an entity object corresponding to the provided bean name.
+     * 
+     * @param string $beanName
+     * @param array $data
+     * @return Entity\EntityInterface
+     */
+    public function createEntityWithName($beanName, array $data = array());
+    
+    /**
      * Creates an entity collection based on the provided data.
      * 
      * @param array $data

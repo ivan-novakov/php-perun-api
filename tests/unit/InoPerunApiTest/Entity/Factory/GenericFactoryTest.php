@@ -234,20 +234,6 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testSimpleCreateEntityWithUndefinedClass()
-    {
-        $this->setExpectedException('InoPerunApi\Entity\Factory\Exception\EntityClassNotFoundException');
-        
-        $this->factory->setBeanToEntityClassMappings(array(
-            'testBean' => 'UndefinedClass'
-        ));
-        
-        $this->factory->simpleCreateEntity(array(
-            'beanName' => 'testBean'
-        ));
-    }
-
-
     public function testSimpleCreateEntity()
     {
         include TESTS_ROOT_DIR . '/data/__TestEntityClass.php';
@@ -261,6 +247,18 @@ class GenericFactoryTest extends \PHPUnit_Framework_TestCase
         ));
         
         $this->assertInstanceOf('__TestEntityClass', $entity);
+    }
+
+
+    public function testCreateEntityWithNameWithUndefinedClass()
+    {
+        $this->setExpectedException('InoPerunApi\Entity\Factory\Exception\EntityClassNotFoundException');
+        
+        $this->factory->setBeanToEntityClassMappings(array(
+            'testBean' => 'UndefinedClass'
+        ));
+        
+        $this->factory->createEntityWithName('testBean');
     }
 
 
