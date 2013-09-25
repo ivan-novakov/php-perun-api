@@ -6,6 +6,7 @@ use InoPerunApi\Client\Client;
 use InoPerunApi\Entity;
 use InoPerunApi\Entity\EntityInterface;
 use InoPerunApi\Entity\Collection\Collection;
+use InoPerunApi\Manager\Exception\PerunErrorException;
 
 
 class GenericManager
@@ -131,11 +132,12 @@ class GenericManager
         try {
             $response = $this->client->sendRequest($this->managerName, $methodName, $params, $changeState);
         } catch (\Exception $e) {
-            throw new Exception\ClientRuntimeException(sprintf("Exception during client request: [%s] %s", get_class($e), $e->getMessage()), null, $e);
+            throw new Exception\ClientRuntimeException(
+                sprintf("Exception during client request: [%s] %s", get_class($e), $e->getMessage()), null, $e);
         }
         
         if ($response->isError()) {
-            throw new Exception\PerunErrorException($response->getErrorId(), $response->getErrorType(), $response->getErrorMessage(), $response->isPerunException());
+            throw PerunErrorException::createFromResponse($response);
         }
         
         return $this->getEntityFactory()->createFromResponsePayload($response->getPayload());
