@@ -63,7 +63,7 @@ class Client
         }
         
         $configFile = $this->options->getConfigFile();
-        if (!\file_exists($configFile) || !\is_readable($configFile)) {
+        if (! \file_exists($configFile) || ! \is_readable($configFile)) {
             $this->_showError(sprintf("File '%s' cannot be found or not readable", $configFile));
         }
         $config = require $configFile;
@@ -83,9 +83,14 @@ class Client
         
         $this->_showInfo(sprintf("Calling %s->%s (%s)", $managerName, $functionName, http_build_query($arguments, null, ', ')));
         
+        $startTime = time();
         $response = $perunClient->sendRequest($managerName, $functionName, $arguments);
+        $endTime = time();
+        
+        $this->_showInfo(sprintf("Time: %d second(s)", $endTime - $startTime));
+        
         if ($response->isError()) {
-            $this->_showError(sprintf("Perun error [%s]: %s (%s)", $response->getErrorId(), $response->getErrorType(), $response->getErrorMessage()));
+            $this->_showError(sprintf("Perun error [%s]: [%s/%s] %s", $response->getErrorId(), $response->getErrorName(), $response->getErrorType(), $response->getErrorMessage()));
         }
         
         $data = $this->_processResultData($response->getPayload()

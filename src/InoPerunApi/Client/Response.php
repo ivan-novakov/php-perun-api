@@ -12,6 +12,10 @@ class Response
 
     const PARAM_ERROR_INFO = 'errorInfo';
 
+    const PARAM_ERROR_MESSAGE = 'message';
+
+    const PARAM_ERROR_NAME = 'name';
+
     const PARAM_ERROR_IS_PERUN_EXCEPTION = 'isPerunException';
 
     /**
@@ -76,17 +80,6 @@ class Response
 
 
     /**
-     * Returns the response error ID, if present.
-     * 
-     * @return string|null
-     */
-    public function getErrorId()
-    {
-        return $this->payload->getParam(self::PARAM_ERROR_ID);
-    }
-
-
-    /**
      * Returns true, if there is an error.
      * 
      * @return boolean
@@ -94,6 +87,17 @@ class Response
     public function isError()
     {
         return (null !== $this->getErrorId());
+    }
+
+
+    /**
+     * Returns the response error ID, if present.
+     *
+     * @return string|null
+     */
+    public function getErrorId()
+    {
+        return $this->payload->getParam(self::PARAM_ERROR_ID);
     }
 
 
@@ -115,7 +119,29 @@ class Response
      */
     public function getErrorMessage()
     {
+        return $this->payload->getParam(self::PARAM_ERROR_MESSAGE);
+    }
+
+
+    /**
+     * Returns the error info, if present.
+     * 
+     * @return string|null
+     */
+    public function getErrorInfo()
+    {
         return $this->payload->getParam(self::PARAM_ERROR_INFO);
+    }
+
+
+    /**
+     * Returns the error name, if present.
+     * 
+     * @return string|null
+     */
+    public function getErrorName()
+    {
+        return $this->payload->getParam(self::PARAM_ERROR_NAME);
     }
 
 
@@ -132,5 +158,23 @@ class Response
         }
         
         return false;
+    }
+
+
+    /**
+     * Returns all information about the error.
+     * 
+     * @return array
+     */
+    public function getErrorData()
+    {
+        return array(
+            'id' => $this->getErrorId(),
+            'name' => $this->getErrorName(),
+            'type' => $this->getErrorType(),
+            'message' => $this->getErrorMessage(),
+            'info' => $this->getErrorInfo(),
+            'perunException' => $this->isPerunException()
+        );
     }
 }

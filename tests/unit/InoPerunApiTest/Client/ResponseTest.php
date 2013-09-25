@@ -25,16 +25,20 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $errorId = 'testid';
         $errorType = 'testtype';
         $errorMessage = 'testmessage';
+        $errorInfo = 'testinfo';
+        $errorName = 'testname';
         $isPerunException = 'true';
         
         $request = $this->getRequestMock();
-        $payload = $this->getPayloadMock($errorId, $errorType, $errorMessage, $isPerunException);
+        $payload = $this->getPayloadMock($errorId, $errorType, $errorMessage, $errorInfo, $errorName, $isPerunException);
         $response = new Response($request, $payload);
         
         $this->assertTrue($response->isError());
         $this->assertSame($errorId, $response->getErrorId());
         $this->assertSame($errorType, $response->getErrorType());
         $this->assertSame($errorMessage, $response->getErrorMessage());
+        $this->assertSame($errorInfo, $response->getErrorInfo());
+        $this->assertSame($errorName, $response->getErrorName());
         $this->assertTrue($response->isPerunException());
     }
     
@@ -49,7 +53,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    protected function getPayloadMock($errorId = null, $errorType = null, $errorMessage = null, $isPerunException = null)
+    protected function getPayloadMock($errorId = null, $errorType = null, $errorMessage = null, $errorInfo = null, $errorName = null, $isPerunException = null)
     {
         $payload = $this->getMock('InoPerunApi\Client\Payload');
         if ($errorId) {
@@ -67,9 +71,17 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
                 ->will($this->returnValue($errorType));
             $payload->expects($this->at(3))
                 ->method('getParam')
-                ->with(Response::PARAM_ERROR_INFO)
+                ->with(Response::PARAM_ERROR_MESSAGE)
                 ->will($this->returnValue($errorMessage));
             $payload->expects($this->at(4))
+                ->method('getParam')
+                ->with(Response::PARAM_ERROR_INFO)
+                ->will($this->returnValue($errorInfo));
+            $payload->expects($this->at(5))
+                ->method('getParam')
+                ->with(Response::PARAM_ERROR_NAME)
+                ->will($this->returnValue($errorName));
+            $payload->expects($this->at(6))
                 ->method('getParam')
                 ->with(Response::PARAM_ERROR_IS_PERUN_EXCEPTION)
                 ->will($this->returnValue($isPerunException));
