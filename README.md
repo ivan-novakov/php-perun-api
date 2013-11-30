@@ -1,5 +1,7 @@
 # PHP Perun API
 
+[![Dependency Status](https://www.versioneye.com/user/projects/529a013a632bacbcb9000002/badge.png)](https://www.versioneye.com/user/projects/529a013a632bacbcb9000002)
+
 A client library written in PHP to consume [Perun](http://perun.metacentrum.cz/web/index.shtml) REST API.
 
 ## Intro
