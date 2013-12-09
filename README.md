@@ -4,6 +4,9 @@
 
 A client library written in PHP to consume [Perun](http://perun.metacentrum.cz/web/index.shtml) REST API.
 
+[Perun](http://perun.metacentrum.cz/web/index.shtml) is a content management system that handles user identities, groups, resources and services. 
+It is currently developed by [CESNET](http://www.ces.net/), [CERIT-SC](http://www.cerit-sc.cz/en/) together with students from [Masaryk University in Brno](http://www.muni.cz/).
+
 ## Intro
 
 This software is being developed as a part of the Shongo Project initiated by [CESNET, a. l. e.](http://www.ces.net/).
