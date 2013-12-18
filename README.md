@@ -25,7 +25,7 @@ This software is being developed as a part of the Shongo Project initiated by [C
 To install the library through [composer](http://getcomposer.org/), add the following requirement to your `composer.json` file:
 
     "require": {
-        "ivan-novakov/php-perun-api": "dev-master"
+        "ivan-novakov/php-perun-api": "~0.1"
     }
 
 And run `composer install/update`.
