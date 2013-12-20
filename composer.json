@@ -16,10 +16,10 @@
 
     "require" : {
         "php" : ">=5.3.3",
-        "zendframework/zend-stdlib" : ">=2.2.0",
-        "zendframework/zend-http" : ">=2.2.0",
-        "zendframework/zend-json" : ">=2.2.0",
-        "zendframework/zend-console" : ">=2.2.0"
+        "zendframework/zend-stdlib" : "~2.2",
+        "zendframework/zend-http" : "~2.2",
+        "zendframework/zend-json" : "~2.2",
+        "zendframework/zend-console" : "~2.2"
     },
     "autoload" : {
         "psr-0" : {
