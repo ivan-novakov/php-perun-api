@@ -58,7 +58,7 @@ class GenericFactory implements FactoryInterface
         'RichUser' => 'InoPerunApi\Entity\Collection\RichUserCollection',
         'Attribute' => 'InoPerunApi\Entity\Collection\AttributeCollection',
         'ExtSource' => 'InoPerunApi\Entity\Collection\ExtSourceCollection',
-        'UserExtSoure' => 'InoPerunApi\Entity\Collection\UserExtSourceCollection',
+        'UserExtSource' => 'InoPerunApi\Entity\Collection\UserExtSourceCollection',
         'Member' => 'InoPerunApi\Entity\Collection\MemberCollection',
         'RichMember' => 'InoPerunApi\Entity\Collection\RichMemberCollection'
     );

@@ -9,7 +9,7 @@ namespace InoPerunApi\Entity;
  * @link http://perun.metacentrum.cz/javadoc/cz/metacentrum/perun/core/api/RichMember.html
  * 
  * @method \InoPerunApi\Entity\User getUser()
- * @method \InoPerunApi\Entity\Collection\UserExtSourceCollection getUserExtSource()
+ * @method \InoPerunApi\Entity\Collection\UserExtSourceCollection getUserExtSources()
  * @method \InoPerunApi\Entity\Collection\AttributeCollection getUserAttributes()
  * @method \InoPerunApi\Entity\Collection\AttributeCollection getMemberAttributes()
  */
