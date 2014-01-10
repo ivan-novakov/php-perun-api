@@ -35,7 +35,11 @@ class Collection implements \Countable, \IteratorAggregate
      */
     public function setEntities(array $entities)
     {
-        $this->entities = new ArrayObject($entities);
+        $this->entities = new ArrayObject();
+        
+        foreach ($entities as $entity) {
+            $this->append($entity);
+        }
     }
 
 

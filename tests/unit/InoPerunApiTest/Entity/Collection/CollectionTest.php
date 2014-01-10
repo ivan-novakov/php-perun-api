@@ -12,9 +12,49 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testSetEntities()
     {
         $entities = $this->createEntityArray();
-        $collection = new Collection();
+        
+        $collection = $this->getMockBuilder('InoPerunApi\Entity\Collection\Collection')
+            ->setMethods(array(
+            'isAllowed'
+        ))
+            ->getMock();
+        
+        foreach ($entities as $index => $entity) {
+            $collection->expects($this->at($index))
+                ->method('isAllowed')
+                ->with($entity)
+                ->will($this->returnValue(true));
+        }
+        
         $collection->setEntities($entities);
         $this->assertSame($entities, $collection->getEntities());
+    }
+
+
+    public function testSetEntitiesWithInvalidEntity()
+    {
+        $this->setExpectedException('InoPerunApi\Entity\Collection\Exception\InvalidEntityException');
+        
+        $entities = $this->createEntityArray();
+        $allowed = array(
+            true,
+            false
+        );
+        
+        $collection = $this->getMockBuilder('InoPerunApi\Entity\Collection\Collection')
+            ->setMethods(array(
+            'isAllowed'
+        ))
+            ->getMock();
+        
+        foreach ($entities as $index => $entity) {
+            $collection->expects($this->at($index))
+                ->method('isAllowed')
+                ->with($entity)
+                ->will($this->returnValue($allowed[$index]));
+        }
+        
+        $collection->setEntities($entities);
     }
 
 
@@ -54,15 +94,12 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('InoPerunApi\Entity\Collection\Exception\InvalidEntityException');
         
-        $entities = $this->createEntityArray();
         $collection = $this->getMockBuilder('InoPerunApi\Entity\Collection\Collection')
             ->setMethods(array(
             'isAllowed'
         ))
-            ->setConstructorArgs(array(
-            $entities
-        ))
             ->getMock();
+        
         $collection->expects($this->once())
             ->method('isAllowed')
             ->will($this->returnValue(false));
