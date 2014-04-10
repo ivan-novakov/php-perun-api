@@ -97,6 +97,12 @@ class Collection implements \Countable, \IteratorAggregate
     }
 
 
+    /**
+     * Append an entity to the collection.
+     * 
+     * @param EntityInterface $entity
+     * @throws Exception\InvalidEntityException
+     */
     public function append(EntityInterface $entity)
     {
         if (! $this->isAllowed($entity)) {
@@ -106,6 +112,20 @@ class Collection implements \Countable, \IteratorAggregate
     }
 
 
+    public function appendCollection(Collection $collection)
+    {
+        foreach ($collection as $entity) {
+            $this->append($entity);
+        }
+    }
+
+
+    /**
+     * Returns true, if the entity is allowed to be added to the collection.
+     * 
+     * @param EntityInterface $entity
+     * @return boolean
+     */
     public function isAllowed(EntityInterface $entity)
     {
         return true;

@@ -122,11 +122,46 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     }
 
 
+    public function testAppendCollection()
+    {
+        $entity1 = $this->createEntityMock();
+        $entity2 = $this->createEntityMock();
+        $entity3 = $this->createEntityMock();
+        $entity4 = $this->createEntityMock();
+        $entity5 = $this->createEntityMock();
+        
+        $col1 = new Collection(array(
+            $entity1,
+            $entity2,
+            $entity3
+        ));
+        
+        $col2 = new Collection(array(
+            $entity4,
+            $entity5
+        ));
+        
+        $col1->appendCollection($col2);
+        
+        $this->assertCount(5, $col1);
+        $this->assertSame($entity4, $col1->getAt(3));
+        $this->assertSame($entity5, $col1->getAt(4));
+    }
+    
+    /*
+     * 
+     */
     protected function createEntityArray()
     {
         return array(
-            $this->getMock('InoPerunApi\Entity\EntityInterface'),
-            $this->getMock('InoPerunApi\Entity\EntityInterface')
+            $this->createEntityMock(),
+            $this->createEntityMock()
         );
+    }
+
+
+    protected function createEntityMock()
+    {
+        return $this->getMock('InoPerunApi\Entity\EntityInterface');
     }
 }
